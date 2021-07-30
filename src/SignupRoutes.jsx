@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import Cookies from 'js-cookie'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
-
-import { config } from './config'
 
 import './index.scss'
 import SvgSpinner from './components/svg-spinner'
@@ -14,9 +10,6 @@ import Signup from './auth/signup'
 import Welcome from './auth/welcome'
 
 // payment components
-import SignupPayment from './auth/payment'
-
-const stripePromise = loadStripe(config.get('stripeKey'))
 
 const SignupRoutes = () => {
   const [verifiedSignup, setVerifiedSignup] = useState(true) // TODO CHANGE!!!
@@ -51,17 +44,6 @@ const SignupRoutes = () => {
             exact
             path={`${process.env.PUBLIC_URL}/signup/welcome`}
             component={Welcome}
-          />
-          <Route
-            exact
-            path={`${process.env.PUBLIC_URL}/signup/payment`}
-            component={() => {
-              return (
-                <Elements stripe={stripePromise}>
-                  <SignupPayment />
-                </Elements>
-              )
-            }}
           />
           <Route
             exact

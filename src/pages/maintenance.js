@@ -29,7 +29,7 @@ const Maintenance = () => {
             <div>
               <Link
                 className="btn btn-info-gradien btn-lg text-light"
-                to={`${process.env.PUBLIC_URL}/dashboard/default`}
+                to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
               >
                 BACK TO HOME PAGE
               </Link>

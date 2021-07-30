@@ -21,7 +21,7 @@ const Error401 = () => {
             </div>
             <div>
               <Link
-                to={`${process.env.PUBLIC_URL}/dashboard/default`}
+                to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
                 className="btn btn-warning-gradien"
               >
                 {' '}

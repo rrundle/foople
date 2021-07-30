@@ -1,10 +1,13 @@
 import React, { Fragment, useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 import man from '../../assets/images/dashboard/user.png'
 import { CreditCard, DollarSign, Settings, LogOut } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router'
+import Cookies from 'js-cookie'
+import { SET_AUTH, ADD_USER, REQUEST_LOGOUT } from '../../constants/actionTypes'
 
-const UserMenu = ({ history }) => {
+const UserMenu = ({ history, setAuth, setUser, requestLogout }) => {
   const [profile, setProfile] = useState('')
 
   useEffect(() => {
@@ -14,6 +17,13 @@ const UserMenu = ({ history }) => {
   const logOut = () => {
     localStorage.removeItem('profileURL')
     console.log('signout!')
+    Cookies.remove('lunch-session')
+    const exist = Cookies.get('lunch-session')
+    console.log('exist', exist)
+    setAuth(false)
+    setUser({})
+    requestLogout()
+    console.log('pushing history to login!')
     history.push(`${process.env.PUBLIC_URL}/login`)
   }
 
@@ -45,7 +55,7 @@ const UserMenu = ({ history }) => {
             </Link>
           </li>
           <li>
-            <Link to={`${process.env.PUBLIC_URL}/ecommerce/payment`}>
+            <Link to={`${process.env.PUBLIC_URL}/app/account/payment`}>
               <CreditCard />
               Billing
             </Link>
@@ -61,4 +71,10 @@ const UserMenu = ({ history }) => {
   )
 }
 
-export default withRouter(UserMenu)
+const mapDispatchToProps = (dispatch) => ({
+  setAuth: (value) => dispatch({ type: SET_AUTH, value }),
+  setUser: (value) => dispatch({ type: ADD_USER, value }),
+  requestLogout: () => dispatch({ type: REQUEST_LOGOUT }),
+})
+
+export default withRouter(connect(null, mapDispatchToProps)(UserMenu))

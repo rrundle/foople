@@ -1,5 +1,5 @@
-const rp = require('request-promise')
-const { mongoClient, options } = require('./helpers')
+const fetch = require('node-fetch')
+const { mongoClient, options } = require('../database')
 
 require('dotenv').config()
 
@@ -26,8 +26,8 @@ const dialog = {
 }
 
 const launchSearchSpots = async ({ teamId, triggerId, token }) => {
-  const collection = await mongoClient(teamId)
-  const data = await collection.findOne()
+  const userCollection = await mongoClient(teamId, 'auth')
+  const data = await userCollection.findOne()
   const requestData = {
     bearerToken: data.access_token,
     ...dialog,
@@ -35,10 +35,12 @@ const launchSearchSpots = async ({ teamId, triggerId, token }) => {
     trigger_id: triggerId,
   }
   try {
-    const response = await rp(
-      options({ data: requestData, uri: 'https://slack.com/api/dialog.open' }),
+    const response = await fetch(
+      'https://slack.com/api/dialog.open',
+      options({ data: requestData }),
     )
-    return response
+    const body = await response.json()
+    return body
   } catch (err) {
     return err
   }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Route, Redirect } from 'react-router-dom'
+import { withRouter } from 'react-router'
+import { Route, Redirect, Switch, useLocation } from 'react-router-dom'
 import Cookies from 'js-cookie'
 
 import './index.scss'
@@ -9,47 +10,75 @@ import initializeAuth from './actions/initializeAuth'
 import { cookieExpiration } from './config'
 
 // Import custom Components
-import Default from './components/dashboard/defaultCompo/default'
-import Payment from './components/payment'
+import Dashboard from './components/dashboard'
+import BillingPage from './components/payment/BillingPage'
 import Pricing from './components/price/pricing'
 import SvgSpinner from './components/svg-spinner'
 import DataTableComponent from './components/tables/dataTableComponent'
 import UserEdit from './components/userEdit'
+import SignupRoutes from './SignupRoutes'
+import Signin from './auth/signin'
+import Welcome from './auth/welcome'
+import HomePage from './homepage/HomePage'
 
-const AccountRoutes = ({ auth, authData, initializeAuth }) => {
-  console.log('HELLO????')
-  const [loggedIn, setLoggedInState] = useState(true) // TODO CHANGE!!
-  const [checkingAuth, setCheckingAuth] = useState(false) // TODO CHANGE!!
+import { SET_AUTH } from './constants/actionTypes'
 
-  console.log('auth: ', auth)
+const AccountRoutes = ({
+  history,
+  setAuth,
+  auth,
+  authData,
+  initializeAuth,
+  logoutRequested,
+}) => {
+  const location = useLocation()
+  const [loggedIn, setLoggedInState] = useState(false) // TODO CHANGE!!
+  const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
 
   useEffect(() => {
-    // checkAuth()
-    // only want to run this on mount
-    //eslint-disable-next-line react-hooks/exhaustive-deps
+    checkAuth()
   }, [])
 
+  useEffect(() => {
+    if (auth && Object.keys(authData).length) {
+      authUser()
+    } else {
+      console.log('checking auth at logout')
+      if (logoutRequested) {
+        setLoggedInState(false)
+      }
+    }
+  }, [auth, authData])
+
   const checkAuth = async () => {
+    console.log('checkingAuth at login!')
     setCheckingAuth(true)
-    // user is already logged in
+    // if user is already logged in
     if (auth && Object.keys(authData).length) {
       setLoggedInState(true)
       return setCheckingAuth(false)
     }
-    // no auth in state, check if user has jwt
-    const authStatus = await initializeAuth()
-    console.log('authStatus: ', authStatus)
-    if (!authStatus.authed) {
-      console.log('no auth')
-      setLoggedInState(false)
-      return setCheckingAuth(false)
+    const existingCookie = Cookies.get('lunch-session')
+    console.log('existingCookie', existingCookie)
+    if (existingCookie) {
+      // no auth in state but user has token, refresh auth
+      return initializeAuth(history, location)
     }
-    Cookies.set('lunch-session', authStatus.token, {
+    setAuth(false)
+    setLoggedInState(false)
+    setCheckingAuth(false)
+  }
+
+  const authUser = () => {
+    Cookies.set('lunch-session', authData.token, {
       expires: cookieExpiration,
     })
     setLoggedInState(true)
-    return setCheckingAuth(false)
+    setCheckingAuth(false)
   }
+
+  console.log('checkingAuth: ', checkingAuth)
+  console.log('loggedIn: ', loggedIn)
 
   return (
     <>
@@ -62,43 +91,104 @@ const AccountRoutes = ({ auth, authData, initializeAuth }) => {
           {loggedIn ? (
             <>
               <App>
-                {/* dashboard menu */}
-                <Route
-                  exact
-                  path={`${process.env.PUBLIC_URL}/app`}
-                  render={() => (
-                    <Redirect
-                      to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                    />
-                  )}
-                />
-                {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Default} /> */}
-                <Route
-                  path={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                  component={Default}
-                />
-                <Route
-                  path={`${process.env.PUBLIC_URL}/app/table/datatable`}
-                  component={DataTableComponent}
-                />
-                <Route
-                  path={`${process.env.PUBLIC_URL}/app/users/userEdit`}
-                  component={UserEdit}
-                />
-                <Route
-                  path={`${process.env.PUBLIC_URL}/app/account/payment`}
-                  component={Payment}
-                />
-
-                {/* Pricing */}
-                <Route
-                  path={`${process.env.PUBLIC_URL}/app/price/pricing`}
-                  component={Pricing}
-                />
+                <Switch>
+                  {/* dashboard menu */}
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/app`}
+                    render={() => (
+                      <Redirect
+                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/signup/welcome`}
+                    component={Welcome}
+                  />
+                  {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Default} /> */}
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                    component={Dashboard}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/app/table/datatable`}
+                    component={DataTableComponent}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/app/users/userEdit`}
+                    component={UserEdit}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/app/account/payment`}
+                    component={BillingPage}
+                  />
+                  {/* Pricing */}
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/price/pricing`}
+                    component={Pricing}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/login`}
+                    render={() => (
+                      <Redirect
+                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/signup`}
+                    render={() => (
+                      <Redirect
+                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path={`${process.env.PUBLIC_URL}/`}
+                    render={() => (
+                      <Redirect
+                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                      />
+                    )}
+                  />
+                  <Route
+                    path={'*'}
+                    render={() => (
+                      <Redirect
+                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                      />
+                    )}
+                  />
+                </Switch>
               </App>
             </>
           ) : (
-            <Redirect to={`${process.env.PUBLIC_URL}/login`} />
+            <Switch>
+              <Route
+                path={`${process.env.PUBLIC_URL}/login`}
+                component={Signin}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/signup`}
+                component={SignupRoutes}
+              />
+              <Route
+                exact
+                path={`${process.env.PUBLIC_URL}/`}
+                component={HomePage}
+              />
+              <Route
+                path={'*'}
+                render={() => (
+                  <Redirect to={`${process.env.PUBLIC_URL}/login`} />
+                )}
+              />
+            </Switch>
           )}
         </>
       )}
@@ -106,9 +196,22 @@ const AccountRoutes = ({ auth, authData, initializeAuth }) => {
   )
 }
 
-const mapStateToProps = ({ auth = false, authData = {} }) => ({
+const mapStateToProps = ({
+  auth = false,
+  authData = {},
+  logoutRequested = false,
+}) => ({
   auth,
   authData,
+  logoutRequested,
 })
 
-export default connect(mapStateToProps, { initializeAuth })(AccountRoutes)
+const mapDispatchToProps = (dispatch) => ({
+  setAuth: (value) => dispatch({ type: SET_AUTH, value }),
+  initializeAuth: (history, location) =>
+    dispatch(initializeAuth(history, location)),
+})
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(AccountRoutes),
+)

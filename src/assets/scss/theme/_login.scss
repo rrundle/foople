@@ -40,9 +40,12 @@ $url_1: url(../../images/other-images/auth-bg-1.jpg);
     display: flex;
   }
   h3 {
-    color: $dark-color;
+    color: $primary-color;
     font-weight: 600;
     letter-spacing: 1px;
+    font-family: $logo-font-family;
+    font-size: 2.3rem;
+    margin: 10px auto;
   }
   h4 {
     color: $theme-body-font-color;

@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
+const { mongoClient } = require('./database')
 
 const generateJWT = (userData) => {
-  console.log('userData: ', userData)
+  console.log('userData', userData)
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
@@ -17,11 +18,12 @@ const generateJWT = (userData) => {
     } = {},
     stripeId,
     team: { id: teamId } = {},
-    trial,
+    status,
+    subscriptionId,
     trialPeriodStart,
   } = userData
 
-  let payload = {
+  const payload = {
     accessToken,
     avatarLarge,
     avatarSmall,
@@ -30,7 +32,8 @@ const generateJWT = (userData) => {
     name,
     stripeId,
     teamId,
-    trial,
+    status,
+    subscriptionId,
     trialPeriodStart,
     uid,
   }
@@ -40,37 +43,53 @@ const generateJWT = (userData) => {
   })
 }
 
-const refreshJwt = (jwtStatus) => {
-  console.log('jwtSTatus: ', jwtStatus)
+const refreshJwt = async (jwtStatus) => {
   // TODO we should be getting updated data from the database
   // instead of just refreshing the data from the cookie
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
 
-  const {
-    decoded: {
-      avatarLarge,
-      avatarSmall,
-      email,
-      isAdmin,
-      name,
-      teamId,
-      uid,
-    } = {},
-  } = jwtStatus
+  const { decoded: { teamId } = {} } = jwtStatus
+  if (!teamId) return null
+  const userCollection = await mongoClient(teamId, 'auth')
+  const userData = await userCollection.find({}).toArray()
+  console.log('userData: ', userData)
+  if (!userData.length) return undefined
+  const [
+    {
+      access_token: accessToken,
+      stripeId,
+      status,
+      subscriptionId,
+      trialPeriodStart,
+    },
+    {
+      user: {
+        id: uid,
+        image_72: avatarSmall,
+        image_512: avatarLarge,
+        email,
+        name,
+      } = {},
+    },
+  ] = userData
 
-  let payload = {
+  const payload = {
+    accessToken,
     avatarLarge,
     avatarSmall,
     email,
-    isAdmin,
+    isAdmin: true,
     name,
+    stripeId,
     teamId,
+    status,
+    subscriptionId,
+    trialPeriodStart,
     uid,
   }
-
-  console.log('payload: ', payload)
+  console.log('payload', payload)
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: parseInt(expirationDate.getTime() / 1000, 10),
@@ -79,9 +98,7 @@ const refreshJwt = (jwtStatus) => {
 
 const verifyJwt = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    console.log('err: ', err)
     if (err) return { valid: false, decoded: null }
-    console.log('decoded: ', decoded)
     return { valid: true, decoded }
   })
 }

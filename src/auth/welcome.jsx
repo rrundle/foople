@@ -12,11 +12,11 @@ const Welcome = ({ addCompanyInfo }) => {
   const [working, setAppWorking] = useState(true)
   const [companyInfo, setCompanyInfo] = useState({})
   const [redirect, setRedirect] = useState({ status: false, to: '' })
+  console.log('redirect', redirect)
 
   useEffect(() => {
     const getCompanyInfo = async () => {
       const userCookie = Cookies.get('lunch-session')
-      console.log('userCookie: ', userCookie)
       const options = {
         method: 'POST',
         body: JSON.stringify({
@@ -29,9 +29,7 @@ const Welcome = ({ addCompanyInfo }) => {
 
       try {
         const response = await fetch(`${baseUri}/company/get`, options)
-        console.log('response: ', response)
         const body = await response.json()
-        console.log('body: ', body)
         setCompanyInfo(body)
         addCompanyInfo(body)
       } catch (err) {
@@ -43,21 +41,12 @@ const Welcome = ({ addCompanyInfo }) => {
     getCompanyInfo()
   }, [addCompanyInfo])
 
-  const yesClick = async (e) => {
-    const {
-      access_token: accessToken = '',
-      incoming_webhook: { channel_id: channelId = '' } = {},
-    } = companyInfo
-    console.log('say hello')
-    console.log('accessToken: ', accessToken)
-    console.log('channelId: ', channelId)
-    // TODO WE NEED TO ADD THE APP AS A USER FIRST TO THE CHANNEL
-
+  const responseClick = async (welcome) => {
     const options = {
       method: 'PUT',
       body: JSON.stringify({
-        accessToken,
-        channelId,
+        companyInfo,
+        welcome,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -66,27 +55,21 @@ const Welcome = ({ addCompanyInfo }) => {
 
     try {
       const response = await fetch(`${baseUri}/welcome`, options)
-      console.log('response: ', response)
       if (!response.ok) throw new Error('No slack Auth')
       const body = await response.json()
-      console.log('body: ', body)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      // TODO this should be moved to the try block? Dont think we want to progress them on any outcome
+      console.log('body', body)
       setRedirect({
         status: true,
-        to: '/signup/payment',
+        to: '/app/dashboard/default',
+      })
+    } catch (err) {
+      console.error(err)
+      // TODO Say we couldnt say hello
+      setRedirect({
+        status: true,
+        to: '/app/dashboard/default',
       })
     }
-  }
-
-  const noClick = () => {
-    console.log('no problem lets move on')
-    setRedirect({
-      status: true,
-      to: '/signup/payment',
-    })
   }
 
   return working ? (
@@ -97,8 +80,8 @@ const Welcome = ({ addCompanyInfo }) => {
     <>
       <div>Welcome!!</div>
       <div>Can we say hello to the team</div>
-      <Button label="Yes" onClick={() => yesClick()} />
-      <Button label="No" onClick={() => noClick()} />
+      <Button label="Yes" onClick={(e) => responseClick(true)} />
+      <Button label="No" onClick={(e) => responseClick(false)} />
     </>
   )
 }

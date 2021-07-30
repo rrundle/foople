@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { ScrollContext } from 'react-router-scroll-4'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import './index.scss'
 import * as serviceWorker from './serviceWorker'
@@ -15,7 +17,10 @@ const Root = () => {
       <Provider store={store}>
         <BrowserRouter basename={`/`}>
           <ScrollContext>
-            <Router />
+            <>
+              <Router />
+              <ToastContainer />
+            </>
           </ScrollContext>
         </BrowserRouter>
       </Provider>

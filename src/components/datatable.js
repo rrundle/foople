@@ -10,6 +10,24 @@ export class Datatable extends Component {
     this.state = {
       checkedValues: [],
       myData: this.props.myData,
+      loading: false,
+      pageSize: this.props.pageSize,
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { myData } = this.props
+    const { myData: previousData } = prevProps
+    console.log('myData in update hook: ', myData)
+    if (myData.length !== previousData.length) {
+      this.setState({
+        myData,
+        loading: false,
+        pageSize: myData.length,
+      })
+      if (myData.length < previousData.length) {
+        toast.success('Successfully Deleted Spot!')
+      }
     }
   }
 
@@ -27,32 +45,41 @@ export class Datatable extends Component {
   }
 
   handleRemoveRow = () => {
-    const selectedValues = this.state.checkedValues
-    const updatedData = this.state.myData.filter(function (el) {
-      return selectedValues.indexOf(el.id) < 0
-    })
     this.setState({
-      myData: updatedData,
+      loading: true,
     })
-    toast.success('Successfully Deleted !')
+    const selectedValues = this.state.checkedValues
+    this.props.onDelete(selectedValues)
   }
 
   renderEditable = (cellInfo) => {
-    return (
-      <div
-        style={{ backgroundColor: '#fafafa' }}
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={(e) => {
-          const data = [...this.state.myData]
-          data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML
-          this.setState({ myData: data })
-        }}
-        dangerouslySetInnerHTML={{
-          __html: this.state.myData[cellInfo.index][cellInfo.column.id],
-        }}
-      />
-    )
+    const { myData } = this.state
+    if (myData[cellInfo.index]) {
+      return (
+        <div
+          style={{ backgroundColor: '#fafafa' }}
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={(e) => {
+            const data = [...myData]
+            data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML
+            this.setState({ myData: data })
+          }}
+          dangerouslySetInnerHTML={{
+            __html: myData[cellInfo.index][cellInfo.column.id],
+          }}
+        />
+      )
+    }
+    return null
+  }
+
+  renderComponent = (cellInfo) => {
+    const { myData } = this.state
+    if (myData[cellInfo.index]) {
+      return <>{myData[cellInfo.index][cellInfo.column.id]}</>
+    }
+    return null
   }
 
   Capitalize(str) {
@@ -60,8 +87,8 @@ export class Datatable extends Component {
   }
 
   render() {
-    const { pageSize, myClass, multiSelectOption, pagination } = this.props
-    const { myData } = this.state
+    const { myClass, multiSelectOption, pagination } = this.props
+    const { myData, pageSize } = this.state
 
     const columns = []
     for (var key in myData[0]) {
@@ -84,51 +111,60 @@ export class Datatable extends Component {
       if (key === 'user') {
         editable = null
       }
-
-      columns.push({
-        Header: <b>{this.Capitalize(key.toString())}</b>,
-        accessor: key,
-        Cell: editable,
-        style: {
-          textAlign: 'center',
-        },
-      })
+      if (React.isValidElement(myData[0][key])) {
+        editable = this.renderComponent
+      }
+      if (key !== 'id') {
+        columns.push({
+          Header: <b>{this.Capitalize(key.toString())}</b>,
+          accessor: key,
+          Cell: editable,
+          style: {
+            textAlign: 'center',
+          },
+        })
+      }
     }
 
     if (multiSelectOption === true) {
-      columns.push({
-        Header: (
-          <button
-            className="btn btn-danger btn-sm btn-delete mb-0 b-r-4"
-            onClick={(e) => {
-              if (window.confirm('Are you sure you wish to delete this item?'))
-                this.handleRemoveRow()
-            }}
-          >
-            Delete
-          </button>
-        ),
-        id: 'delete',
-        accessor: (str) => 'delete',
-        sortable: false,
-        style: {
-          textAlign: 'center',
-        },
-        Cell: (row) => (
-          <div>
-            <span>
-              <input
-                type="checkbox"
-                name={row.original.id}
-                defaultChecked={this.state.checkedValues.includes(
-                  row.original.id,
-                )}
-                onChange={(e) => this.selectRow(e, row.original.id)}
-              />
-            </span>
-          </div>
-        ),
-      })
+      if (myData.length) {
+        columns.push({
+          Header: (
+            <button
+              className="btn btn-danger btn-sm btn-delete mb-0 b-r-4"
+              disabled={this.state.loading}
+              onClick={(e) => {
+                if (
+                  window.confirm('Are you sure you wish to delete this item?')
+                )
+                  this.handleRemoveRow()
+              }}
+            >
+              {this.state.loading ? '...' : 'Delete'}
+            </button>
+          ),
+          id: 'delete',
+          accessor: (str) => 'delete',
+          sortable: false,
+          style: {
+            textAlign: 'center',
+          },
+          Cell: (row) => {
+            return (
+              <div>
+                <span>
+                  <input
+                    type="checkbox"
+                    name={row.original.id}
+                    checked={this.state.checkedValues.includes(row.original.id)}
+                    onChange={(e) => this.selectRow(e, row.original.id)}
+                  />
+                </span>
+              </div>
+            )
+          },
+        })
+      }
     } else {
       columns.push({
         Header: <b>Action</b>,
@@ -187,6 +223,7 @@ export class Datatable extends Component {
           defaultPageSize={pageSize}
           className={myClass}
           showPagination={pagination}
+          noDataText="No data right now, head to Slack and add some with `/lunch add`"
         />
         <ToastContainer />
       </Fragment>

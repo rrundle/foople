@@ -7,11 +7,15 @@ const SvgSpinner = ({ show }) => {
     // This triggers the spinner animation
     const loopSvg = () => {
       const path = document.querySelector('.lunch-logo-bottom')
+      const pathTop = document.querySelector('.lunch-logo-top')
       const length = path.getTotalLength()
+      const lengthTop = pathTop.getTotalLength()
       setInterval(() => {
         drawSvg(path, length)
+        drawSvg(pathTop, length)
         setTimeout(() => {
           undrawSvg(path, length)
+          undrawSvg(pathTop, lengthTop)
         }, animationLength / 2)
       }, animationLength)
     }

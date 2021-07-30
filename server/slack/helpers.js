@@ -1,7 +1,4 @@
 const { tiny } = require('tiny-shortener')
-const MongoClient = require('mongodb').MongoClient
-
-const { mongoUrl } = require('./config')
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
@@ -24,8 +21,8 @@ const getRandomSpot = (arr, filteredArray) => {
 
 const getSpecificLunchSpots = ({ appId, text: type }) => {
   return new Promise(async (resolve) => {
-    const collection = await mongoClient(appId)
-    const data = await collection.find().toArray()
+    const spotsCollection = await mongoClient(appId, 'spots')
+    const data = await spotsCollection.find().toArray()
     console.log('data: ', data)
     // filter out the identifier entry
     const onlySpots = data.filter((entry) => entry.alias)
@@ -65,13 +62,11 @@ const getSpecificLunchSpots = ({ appId, text: type }) => {
   })
 }
 
-const options = ({ data = {}, uri = '' }) => {
+const options = ({ data = {} }) => {
   const { bearerToken, ...requestData } = data
   return {
     method: 'POST',
-    uri,
-    body: requestData,
-    json: true,
+    body: JSON.stringify(requestData),
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -119,22 +114,10 @@ const triggerSlackPoll = async (appId, text) => {
   }
 }
 
-const mongoClient = (teamId) => {
-  return new Promise((resolve, reject) => {
-    MongoClient.connect(mongoUrl, { useNewUrlParser: true }, (err, client) => {
-      if (err) reject(err)
-      const db = client.db('lunch')
-      const collection = db.collection(teamId)
-      resolve(collection)
-    })
-  })
-}
-
 module.exports = {
   getRandomInt,
   getRandomSpot,
   getSpecificLunchSpots,
-  mongoClient,
   options,
   shuffle,
   triggerSlackPoll,

@@ -1,4 +1,4 @@
-const rp = require('request-promise')
+const fetch = require('node-fetch')
 const { tiny } = require('tiny-shortener')
 
 const createMessage = async (sectionData) => {
@@ -60,7 +60,6 @@ const buildInteractiveMessage = (body, request) => {
 
     const options = {
       method: 'POST',
-      uri: request.response_url,
       body: JSON.stringify({
         channel: request.channel.id,
         token: request.token,
@@ -74,8 +73,9 @@ const buildInteractiveMessage = (body, request) => {
     }
 
     try {
-      const response = await rp(options)
-      resolve(response)
+      const response = await fetch(request.response_url, options)
+      const body = await response.json()
+      resolve(body)
     } catch (err) {
       reject(err)
     }

@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 
 const Login = ({ history }) => {
   const loginAuth = () => {
-    history.push(`${process.env.PUBLIC_URL}/dashboard/default`)
+    history.push(`${process.env.PUBLIC_URL}/app/dashboard/default`)
   }
 
   return (

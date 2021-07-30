@@ -16,8 +16,14 @@ const Signin = () => (
             <div className="col-md-12">
               <div className="auth-innerright">
                 <div className="authentication-box">
-                  <div className="text-center">
-                    <img src={logo} alt="" />
+                  <div className="text-center home-logo">
+                    <img
+                      src={logo}
+                      alt=""
+                      onClick={function () {
+                        window.location = '/'
+                      }}
+                    />
                   </div>
                   <div className="card mt-4 login-card">
                     <div className="card-body">

@@ -981,6 +981,7 @@ body {
 		// datatable
 		.ReactTable {
 			border: 1px solid $dark-border-color;
+			min-height: 75px;
 			.rt-table {
 				.rt-thead {
 					border-bottom: 1px solid $dark-border-color;

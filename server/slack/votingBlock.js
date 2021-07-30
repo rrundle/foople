@@ -1,16 +1,14 @@
 const { v4: uuidv4 } = require('uuid')
 // const qs = require('qs')
-// const rp = require('request-promise')
 
-const { /* mongoClient, */ triggerSlackPoll } = require('./helpers')
+const { triggerSlackPoll } = require('./helpers')
+
 require('dotenv').config()
 
 const votingBlock = async ({ lunchData, vote: voteValue }) => {
-  console.log('voteValue: ', voteValue)
   const { team: { id: teamId } = {}, user } = lunchData
   let refreshedData
   if (voteValue && voteValue !== 'newPoll') {
-    console.log('regular vote!')
     refreshedData = lunchData
     // its a vote not the initial block creation
     const existingBlocks = lunchData.message.blocks
@@ -101,17 +99,12 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
   }
 
   if (voteValue && voteValue === 'newPoll') {
-    console.log('a new poll: ', lunchData.message.blocks[2].accessory.value)
     const type = JSON.parse(lunchData.message.blocks[2].accessory.value).type
-    console.log('type: ', type)
     refreshedData = { ...(await triggerSlackPoll(teamId, type)), type }
   } else if (!voteValue) {
-    console.log('no vote!')
     const type = JSON.parse(lunchData.spot1.value).type
-    console.log('type: ', type)
     refreshedData = { ...lunchData, type }
   }
-  console.log('refreshedData: ', refreshedData)
 
   // this is not a vote, its a request for a new poll
   const poll = [
@@ -216,8 +209,8 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
 }
 
 // TODO when we add avatars we'll need this bit
-// const collection = await mongoClient(teamId)
-// const data = await collection.find().toArray()
+// const userCollection = await mongoClient(teamId, 'auth')
+// const data = await userCollection.find().toArray()
 // const client = data.find(element => element.name === 'newClient')
 //
 // const body = qs.stringify({

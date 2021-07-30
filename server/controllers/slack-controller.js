@@ -1,11 +1,15 @@
-const rp = require('request-promise')
+const fetch = require('node-fetch')
 
-const { mongoClient, options, triggerSlackPoll } = require('../slack/helpers')
+const { options, triggerSlackPoll } = require('../slack/helpers')
+const { mongoClient } = require('../database')
+const { AccountStatus } = require('../constants')
 const launchSearchSpots = require('../slack/searchSpots')
 const searchYelp = require('../slack/searchYelp')
 const votingBlock = require('../slack/votingBlock')
 const buildInteractiveMessage = require('../slack/buildInteractiveMessage')
 const buildHelpBlock = require('../slack/buildHelpBlock')
+const messageResponse = require('../slack/messageResponse')
+const { sendEphemralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
   const {
@@ -18,20 +22,48 @@ const slackLunchCommand = async (req, res) => {
     user_id: userId,
   } = req.body
 
+  const responseText = text === 'help' ? 'Help is on the way!' : 'One sec...'
+
+  res.status(200).json({
+    response_type: 'ephemeral',
+    text: responseText,
+  })
+
+  const authCollection = await mongoClient(teamId, 'auth')
+  const [company, user] = await authCollection.find({}).toArray()
+
+  if (company.status === AccountStatus.TrialExpired) {
+    let message =
+      ':cry: Your free trial has expired. Please contact your channel admin to get things running again.'
+    if (userId === user.user_id) {
+      message =
+        ':exclamation: Your free trial has expired. No problem, go to https://foople.com/app/account/payment to keep things going'
+    }
+    return sendEphemralToChannel({
+      accessToken: company.access_token,
+      message,
+      channelId,
+      user: user.user_id,
+    })
+  }
+
+  if (company.status === AccountStatus.Canceled) {
+    return sendEphemralToChannel({
+      accessToken: company.access_token,
+      message:
+        ':no_entry_sign: Sorry but your account was canceled. Please contact your channel admin to get things running again.',
+      channelId,
+      user: user.user_id,
+    })
+  }
+
   if (text === 'add') {
-    res.sendStatus(200)
     return launchSearchSpots({ teamId, triggerId, token })
   }
 
   if (text === 'help') {
-    res.sendStatus(200)
     return buildHelpBlock(req.body)
   }
-
-  res.status(200).json({
-    response_type: 'ephemeral',
-    text: 'Thanks! Hang tight...',
-  })
 
   const lunchData = await triggerSlackPoll(teamId, text)
   let data = {
@@ -52,7 +84,7 @@ const slackLunchCommand = async (req, res) => {
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
-    rp(options({ data, uri: webhookUrl }))
+    fetch(webhookUrl, options({ body: JSON.stringify(data) }))
   } catch (err) {
     console.error('error from creating poll: ', err)
   }
@@ -89,9 +121,12 @@ const slackInteractiveCommand = async (req, res) => {
       if (submission.text.text === 'Choose') {
         // spot addition request
         const selectedSpot = JSON.parse(submission.value)
-        const collection = await mongoClient(teamId)
+        const spotsCollection = await mongoClient(teamId, 'spots')
+        // check account status
+        const matches = await spotsCollection.find({}).toArray()
+        console.log('matches: ', matches)
         // insert in the database if it doesn't already exist
-        const data = await collection.updateOne(
+        const data = await spotsCollection.updateOne(
           selectedSpot,
           { $set: selectedSpot },
           { upsert: true },
@@ -99,7 +134,6 @@ const slackInteractiveCommand = async (req, res) => {
         // send back message saying successful, failure, or already added
         const options = {
           method: 'POST',
-          uri: request.response_url,
           body: JSON.stringify({
             channel: request.channel.id,
             token: request.token,
@@ -115,7 +149,7 @@ const slackInteractiveCommand = async (req, res) => {
           },
         }
         try {
-          await rp(options)
+          await fetch(request.response_url, options)
         } catch (err) {
           console.error('err: ', err)
         }
@@ -140,7 +174,10 @@ const slackInteractiveCommand = async (req, res) => {
             vote,
           })
 
-          await rp(options({ data, uri: request.response_url }))
+          await fetch(
+            request.response_url,
+            options({ body: JSON.stringify(data) }),
+          )
         } catch (err) {
           console.error('err: ', err)
         }
@@ -149,7 +186,17 @@ const slackInteractiveCommand = async (req, res) => {
   }
 }
 
+const handleMention = async (req, res) => {
+  console.log('req.body: ', req.body)
+  const { challenge } = req.body
+  console.log('challenge', challenge)
+  res.status(200).json({
+    challenge,
+  })
+}
+
 module.exports = {
+  handleMention,
   slackLunchCommand,
   slackInteractiveCommand,
 }

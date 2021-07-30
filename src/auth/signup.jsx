@@ -4,8 +4,6 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withRouter } from 'react-router'
 
-import SlackSignIn from '../components/slack/SignIn'
-
 const Signup = () => (
   <div>
     <div className="page-wrapper">
@@ -19,10 +17,13 @@ const Signup = () => (
                 <div className="authentication-box">
                   <div className="text-center">
                     <img src={logo} alt="" />
+                    <h3 className="signup-title">Lunch Poll</h3>
                   </div>
                   <div className="card mt-4 login-card">
                     <div className="card-body">
-                      <a href="https://slack.com/oauth/v2/authorize?client_id=224182028598.1018140415783&scope=chat:write,commands,incoming-webhook,users:read&user_scope=chat:write,identify&state=signup">
+                      <a
+                        href={`https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`}
+                      >
                         <img
                           alt="Add to Slack"
                           height="40"

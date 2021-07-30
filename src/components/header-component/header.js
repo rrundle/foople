@@ -24,7 +24,7 @@ const Header = () => (
                   alt=""
                 />
               </Link>
-              <div className="logo-text">Lunch Poll</div>
+              <div className="logo-text">Foople</div>
             </div>
           </div>
         </div>

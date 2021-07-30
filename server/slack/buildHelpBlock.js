@@ -1,5 +1,5 @@
-const rp = require('request-promise')
-const { mongoClient } = require('./helpers')
+const fetch = require('node-fetch')
+const { mongoClient } = require('../database')
 
 const buildHelpBlock = (body) => {
   return new Promise(async (resolve, reject) => {
@@ -55,7 +55,6 @@ const buildHelpBlock = (body) => {
 
     const options = {
       method: 'POST',
-      uri: user.incoming_webhook.url, // 'https://slack.com/api/chat.postEphemeral',
       body: JSON.stringify({
         channel: user.incoming_webhook.channel_id,
         token: body.token,
@@ -68,8 +67,9 @@ const buildHelpBlock = (body) => {
       },
     }
     try {
-      const response = await rp(options)
-      resolve(response)
+      const response = await fetch(user.incoming_webhook.url, options)
+      const body = await response.json()
+      resolve(body)
     } catch (err) {
       console.error('err ', err)
       reject(err)

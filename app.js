@@ -4,18 +4,30 @@ const cors = require('cors')
 const favicon = require('express-favicon')
 const bodyParser = require('body-parser')
 
-const { mongoClient } = require('./server/slack/helpers')
+const schedule = require('node-schedule')
+const moment = require('moment')
+
+const { mongoClient } = require('./server/database')
 const {
   slackLunchCommand,
   slackInteractiveCommand,
+  handleMention,
 } = require('./server/controllers/slack-controller')
 const {
-  checkAuth,
-  createSubscription,
   getCompany,
-  welcome,
+  getUserSpots,
+  deleteUserSpots,
 } = require('./server/controllers/web-controller')
-const { oauth } = require('./server/controllers/install-controller')
+const {
+  checkAuth,
+  oauth,
+  welcome,
+} = require('./server/controllers/auth-controller')
+const {
+  createSubscription,
+  updateSubscription,
+  getPaymentMethods,
+} = require('./server/controllers/payment-controller')
 
 require('dotenv').config()
 
@@ -54,28 +66,47 @@ app.put('/check-auth', checkAuth)
 /* Get company that was added on signup */
 app.post('/company/get', getCompany)
 
+/* Get user's spots for listing in admin */
+app.post('/spots/get', getUserSpots)
+
+/* Get user's spots for listing in admin */
+app.post('/spots/delete', deleteUserSpots)
+
 /* Send welcome message when user isntalls the app */
 app.put('/welcome', welcome)
+
+/* slack calls this api when someone @mentions the app */
+app.post('/slack-mention', handleMention)
 
 /* Create subscription for paying client */
 app.post('/payment/create-subscription', createSubscription)
 
+/* Update subscription for paying client */
+app.post('/payment/update-subscription', updateSubscription)
+
+/* Get payment methods for customer */
+app.get('/payment/get-payments', getPaymentMethods)
+
 /* CLEAR THE DATABASE */
 // WARNING proceed with caution
-app.get('/clear', async (req, res) => {
+// TODO Remove this when launching app
+app.post('/clear', async (req, res) => {
+  console.log('hello from clear: ', req.body)
+  console.log('process.env.MONGO_PASSWORD: ', process.env.MONGO_PASSWORD)
   const { teamId, password } = req.body
   if (password !== process.env.MONGO_PASSWORD) {
     res.sendStatus(404)
   } else {
-    const collection = await mongoClient(teamId)
-    const user = await collection.deleteMany({})
-    console.info('data from delete: ', user)
+    const spotsCollection = await mongoClient(teamId, 'spots')
+    const spots = await spotsCollection.deleteMany({})
+    const userCollection = await mongoClient(teamId, 'auth')
+    const user = await userCollection.deleteMany({})
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'DELETE,GET,PATCH,POST,PUT',
       'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     })
-    res.status('200').send(user)
+    res.status('200').send({ user, spots })
   }
 })
 

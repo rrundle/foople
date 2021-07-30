@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom'
 
 import './index.scss'
 import AccountRoutes from './AccountRoutes'
-import SignupRoutes from './SignupRoutes'
 
 // Import custom Components
 import ForgetPwd from './pages/forgetPwd'
@@ -11,15 +10,15 @@ import ResetPwd from './pages/resetPwd'
 
 // Auth
 import SlackAuth from './auth/slackAuth'
-import Signin from './auth/signin'
-
-//Home Page
-import HomePage from './homepage/HomePage'
 
 const Router = () => {
   return (
     <Switch>
-      <Route exact path={`${process.env.PUBLIC_URL}/`} component={HomePage} />
+      <Route
+        exact
+        path={`${process.env.PUBLIC_URL}/`}
+        component={AccountRoutes}
+      />
 
       <Route path={`${process.env.PUBLIC_URL}/app`} component={AccountRoutes} />
 
@@ -31,10 +30,13 @@ const Router = () => {
 
       <Route
         path={`${process.env.PUBLIC_URL}/signup`}
-        component={SignupRoutes}
+        component={AccountRoutes}
       />
 
-      <Route path={`${process.env.PUBLIC_URL}/login`} component={Signin} />
+      <Route
+        path={`${process.env.PUBLIC_URL}/login`}
+        component={AccountRoutes}
+      />
 
       <Route
         path={`${process.env.PUBLIC_URL}/pages/forgetPwd`}
@@ -44,6 +46,7 @@ const Router = () => {
         path={`${process.env.PUBLIC_URL}/pages/resetPwd`}
         component={ResetPwd}
       />
+      <Route component={AccountRoutes} />
     </Switch>
   )
 }
