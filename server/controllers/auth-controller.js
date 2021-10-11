@@ -9,6 +9,8 @@ const { mongoClient } = require('../database')
 const { refreshJwt, verifyJwt } = require('../jwt')
 const { sendMessageToChannel } = require('../helpers/slack-messaging')
 
+const isPaymentEnabled = process.env.PAYMENT_FEATURE_ENABLED
+
 const checkAuth = async (req, res) => {
   const body = req.body
   const { authToken } = body
@@ -72,9 +74,6 @@ const oauth = async (req, res) => {
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
     if (!teamId) throw new Error('no team Id')
-    const spotsCollection = await mongoClient(teamId, 'spots')
-    const spots = await spotsCollection.find({}).toArray()
-    console.log('spots: ', spots)
     const authCollection = await mongoClient(teamId, 'auth')
     const [company, adminUser] = await authCollection.find({}).toArray()
     if (state === 'login' && !company) {
@@ -176,7 +175,7 @@ const welcome = async (req, res) => {
       const messageData = {
         channel: channelId,
         text:
-          'Great news! Foople has been added to your slack workspace!\nUse `/foople help` for a list of commands',
+          'Great news! Foople has been added to your slack workspace!\nFoople lets you create polls to decide where to eat from a list of your favorite places.\nUse `/foople help` for a list of commands',
       }
 
       const messageOptions = {
@@ -229,17 +228,17 @@ const createCompany = async ({
   console.log('teamId in create company', teamId)
 
   stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
-  const customer = await stripe.customers.create({
+  const stripCustomer = isPaymentEnabled ? await stripe.customers.create({
     email: userEmail,
     description: `slack UserId: ${userSlackId}`,
-  })
+  }) : null
 
   const trialPeriodStart = moment()
 
   const authData = {
     ...data,
     name: 'admin',
-    stripeId: customer.id,
+    stripeId: isPaymentEnabled ? stripCustomer.id : null,
     status: AccountStatus.Trial,
     trialPeriodStart: trialPeriodStart.toDate(),
   }
@@ -250,41 +249,43 @@ const createCompany = async ({
     ...authData,
   })
 
-  const in4Days = trialPeriodStart.add(4, 'd').toDate()
-  const fourthDayReminder = async (teamId) => {
-    sendSignupReminder(teamId, 3)
-  }
-  schedule.scheduleJob(in4Days, fourthDayReminder.bind(null, teamId))
-
-  const in6Days = trialPeriodStart.add(6, 'd').toDate()
-  const sixthDayReminder = async (teamId) => {
-    sendSignupReminder(teamId, 1)
-  }
-  schedule.scheduleJob(in6Days, sixthDayReminder.bind(null, teamId))
-
-  const in7Days = trialPeriodStart.add(7, 'd').toDate()
-  const seventhDayReminder = async (teamId) => {
-    sendSignupReminder(teamId, 0)
-  }
-  schedule.scheduleJob(in7Days, seventhDayReminder.bind(null, teamId))
-
-  const in8Days = trialPeriodStart.add(8, 'd').toDate()
-  const expiredReminder = async (teamId) => {
-    const authCollection = await mongoClient(teamId, 'auth')
-    const [company] = await authCollection.find({}).toArray()
-    if (
-      company.status !== AccountStatus.Active &&
-      company.status !== AccountStatus.Canceled
-    ) {
-      // trial expired set account to expired
-      // TODO: Track how many acounts are expiring, this will tell us a lot about conversions
-      authCollection.updateOne(
-        {},
-        { $set: { status: AccountStatus.TrialExpired } },
-      )
+  if (isPaymentEnabled) {
+    const in4Days = trialPeriodStart.add(4, 'd').toDate()
+    const fourthDayReminder = async (teamId) => {
+      sendSignupReminder(teamId, 3)
     }
+    schedule.scheduleJob(in4Days, fourthDayReminder.bind(null, teamId))
+
+    const in6Days = trialPeriodStart.add(6, 'd').toDate()
+    const sixthDayReminder = async (teamId) => {
+      sendSignupReminder(teamId, 1)
+    }
+    schedule.scheduleJob(in6Days, sixthDayReminder.bind(null, teamId))
+
+    const in7Days = trialPeriodStart.add(7, 'd').toDate()
+    const seventhDayReminder = async (teamId) => {
+      sendSignupReminder(teamId, 0)
+    }
+    schedule.scheduleJob(in7Days, seventhDayReminder.bind(null, teamId))
+
+    const in8Days = trialPeriodStart.add(8, 'd').toDate()
+    const expiredReminder = async (teamId) => {
+      const authCollection = await mongoClient(teamId, 'auth')
+      const [company] = await authCollection.find({}).toArray()
+      if (
+        company.status !== AccountStatus.Active &&
+        company.status !== AccountStatus.Canceled
+      ) {
+        // trial expired set account to expired
+        // TODO: Track how many acounts are expiring, this will tell us a lot about conversions
+        authCollection.updateOne(
+          {},
+          { $set: { status: AccountStatus.TrialExpired } },
+        )
+      }
+    }
+    schedule.scheduleJob(in8Days, expiredReminder.bind(null, teamId))
   }
-  schedule.scheduleJob(in8Days, expiredReminder.bind(null, teamId))
 
   return authData
 }

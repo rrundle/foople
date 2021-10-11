@@ -4,9 +4,6 @@ const cors = require('cors')
 const favicon = require('express-favicon')
 const bodyParser = require('body-parser')
 
-const schedule = require('node-schedule')
-const moment = require('moment')
-
 const { mongoClient } = require('./server/database')
 const {
   slackLunchCommand,

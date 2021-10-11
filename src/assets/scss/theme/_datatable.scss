@@ -3,6 +3,8 @@
 ==========================**/
 .ReactTable {
   .rt-table {
+    min-height: 50px;
+    overflow: hidden;
     .rt-thead {
       border-bottom: 1px solid $light-semi-gray;
       box-shadow: none !important;
@@ -31,6 +33,13 @@
         }
       }
     }
+  }
+  .rt-noData.rt-noData {
+    background: transparent;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 550px;
+    text-overflow: ellipsis;
   }
   .-pagination {
     border-top: 1px solid $light-semi-gray !important;

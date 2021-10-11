@@ -31,10 +31,9 @@ const Header = () => (
         <div className="nav-right col p-0">
           <ul className={'nav-menus open'}>
             <li className="onhover-dropdown">
-              <Notification />
+              {/* <Notification />
               <Bell />
-              {/* <span className="dot"></span> */}
-              <Notification />
+              <Notification /> */}
             </li>
             {/* <li>
               <a href="javascript" onClick={showRightSidebar}>
