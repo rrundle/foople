@@ -1,0 +1,6 @@
+/* TODO APP*/
+export const ADD_USER = 'ADD_USER'
+export const COMPANY_SIGNUP_INFO = 'COMPANY_SIGNUP_INFO'
+export const SET_AUTH = 'SET_AUTH'
+export const SET_USERS_SPOTS = 'SET_USERS_SPOTS'
+export const REQUEST_LOGOUT = 'REQUEST_LOGOUT'

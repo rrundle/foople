@@ -1,0 +1,57 @@
+{
+   "type":"home",
+   "blocks":[
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"Lunch Poll lets you and your team search for lunch spots, save them to your teams own set of lunch spots, and trigger a poll of random lunch spots so everyone can vote."
+         }
+      },
+      {
+        "type": "divider"
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Features*"
+         }
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Search for lunch spots*"
+         }
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Save the lunch spots*"
+         }
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Trigger a random poll*"
+         }
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Trigger a poll by lunch type*"
+         }
+      },
+      {
+         "type":"section",
+         "text":{
+            "type":"mrkdwn",
+            "text":"*Refresh the poll*"
+         }
+      }
+   ]
+}

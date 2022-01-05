@@ -1,38 +1,106 @@
 {
-  "name": "lunch-chooser",
+  "name": "foople",
   "version": "1.0.0",
   "engines": {
-    "node": "10.15.3",
+    "node": "14.0.0",
     "npm": "5.5.1"
   },
   "main": "app.js",
-  "repository": "https://github.com/rrundle/lunch-chooser.git",
+  "repository": "https://github.com/rrundle/foople.git",
   "author": "rrundle",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "precommit": "lint-staged",
     "nodemon": "nodemon app.js",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "start:browser": "react-scripts start",
+    "build:browser": "react-scripts build",
+    "test:browser": "react-scripts test",
+    "eject:browser": "react-scripts eject"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/stripe-js": "^1.5.0",
     "body-parser": "^1.18.3",
+    "chartist": "^0.11.4",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.3",
     "express-favicon": "^2.0.1",
-    "moment": "^2.22.2",
+    "js-cookie": "^2.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
+    "moment": "^2.29.1",
     "mongodb": "^3.2.3",
+    "node-fetch": "^2.6.1",
+    "node-sass": "^4.14.0",
+    "node-schedule": "^2.0.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "qs": "^6.9.3",
+    "react-feather": "^2.0.3",
+    "react-redux": "^7.2.0",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.1",
+    "react-router-scroll-4": "^1.0.0-beta.2",
+    "react-scripts": "3.1.2",
+    "react-table": "^6.10.3",
+    "react-toastify": "^5.4.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.5",
-    "tiny-shortener": "^2.2.3"
+    "stripe": "^8.56.0",
+    "tiny-shortener": "^2.2.3",
+    "uuid": "^7.0.2"
   },
   "devDependencies": {
-    "nodemon": "^1.18.4"
+    "husky": ">=4",
+    "lint-staged": ">=10",
+    "nodemon": "^1.18.4",
+    "prettier": "^2.0.4",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "eslintConfig": {
+    "extends": "react-app",
+    "plugins": [
+      "jsx-a11y"
+    ],
+    "rules": {
+      "no-whitespace-before-property": "off"
+    },
+    "overrides": [
+      {
+        "files": [
+          "*-index.js"
+        ],
+        "rules": {
+          "no-unused-expressions": "off"
+        }
+      }
+    ],
+    "reportUnusedDisableDirectives": true,
+    "noInlineConfig": true
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,css}": "prettier --write --no-semi --single-quote --trailing-comma=all"
+  }
 }
