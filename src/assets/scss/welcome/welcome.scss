@@ -1,0 +1,36 @@
+.welcome-page {
+  display: flex;
+  justify-content: center;
+
+  .welcome-page-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 75%;
+
+    .welcome-title {
+      font-size: 3rem;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .welcome-greeting {
+      font-size: 1.3rem;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .welcome-greeting-description {
+      color: lightgray;
+      text-align: center;
+      margin: 5px 0 25px;
+    }
+
+    .welcome-ctas {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-direction: row;
+    }
+  }
+}

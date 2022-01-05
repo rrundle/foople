@@ -1,4 +1,5 @@
 const { tiny } = require('tiny-shortener')
+const { mongoClient } = require('../database')
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
@@ -91,7 +92,7 @@ const shuffle = (array) => {
 
 const triggerSlackPoll = async (appId, text) => {
   const lunchList = await getSpecificLunchSpots({ appId, text })
-  if (!lunchList.length) return []
+  if (!lunchList.length) return {}
   const url1 = await tiny(lunchList[0].url)
   const url2 = await tiny(lunchList[1].url)
   const url3 = await tiny(lunchList[2].url)

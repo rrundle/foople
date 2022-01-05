@@ -96,8 +96,10 @@ app.post('/clear', async (req, res) => {
   } else {
     const spotsCollection = await mongoClient(teamId, 'spots')
     const spots = await spotsCollection.deleteMany({})
+    console.log('🚀 ~ file: app.js ~ line 99 ~ app.post ~ spots', spots)
     const userCollection = await mongoClient(teamId, 'auth')
     const user = await userCollection.deleteMany({})
+    console.log('🚀 ~ file: app.js ~ line 101 ~ app.post ~ user', user)
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'DELETE,GET,PATCH,POST,PUT',

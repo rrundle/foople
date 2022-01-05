@@ -3,10 +3,7 @@ import slackGif from '../../assets/images/Slack_screencast.gif'
 import { config } from '../../config'
 
 const LandingPage = ({ children }) => {
-  console.log('process.env: ', process.env)
-  console.log('config: ', config)
   const appId = config.get('clientId')
-  console.log('appId', appId)
   return (
     <div>
       <div className="landing-page">

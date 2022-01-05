@@ -3,6 +3,10 @@ const { mongoClient } = require('../database')
 
 const buildHelpBlock = (body) => {
   return new Promise(async (resolve, reject) => {
+    console.log(
+      '🚀 ~ file: buildHelpBlock.js ~ line 5 ~ buildHelpBlock ~ body',
+      body.team_id,
+    )
     const message = {
       blocks: [
         {
@@ -44,13 +48,13 @@ const buildHelpBlock = (body) => {
           text: {
             type: 'mrkdwn',
             text:
-              '_*/lunch add*_  Launches a dialog to search for a new lunch spot',
+              '_*/lunch add*_  Launches a dialog to search for and a new lunch spot to the list of options',
           },
         },
       ],
     }
 
-    const collection = await mongoClient(body.team_id)
+    const collection = await mongoClient(body.team_id, 'auth')
     const user = await collection.findOne()
 
     const options = {
@@ -68,8 +72,7 @@ const buildHelpBlock = (body) => {
     }
     try {
       const response = await fetch(user.incoming_webhook.url, options)
-      const body = await response.json()
-      resolve(body)
+      resolve(response)
     } catch (err) {
       console.error('err ', err)
       reject(err)

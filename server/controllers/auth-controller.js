@@ -73,6 +73,11 @@ const oauth = async (req, res) => {
       team: { id: teamId } = {},
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
+    console.log(
+      '🚀 ~ file: auth-controller.js ~ line 74 ~ oauth ~ teamId',
+      teamId,
+    )
+
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')
     const [company, adminUser] = await authCollection.find({}).toArray()
@@ -228,10 +233,12 @@ const createCompany = async ({
   console.log('teamId in create company', teamId)
 
   stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
-  const stripCustomer = isPaymentEnabled ? await stripe.customers.create({
-    email: userEmail,
-    description: `slack UserId: ${userSlackId}`,
-  }) : null
+  const stripCustomer = isPaymentEnabled
+    ? await stripe.customers.create({
+        email: userEmail,
+        description: `slack UserId: ${userSlackId}`,
+      })
+    : null
 
   const trialPeriodStart = moment()
 

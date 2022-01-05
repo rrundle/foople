@@ -12,7 +12,6 @@ const Welcome = ({ addCompanyInfo }) => {
   const [working, setAppWorking] = useState(true)
   const [companyInfo, setCompanyInfo] = useState({})
   const [redirect, setRedirect] = useState({ status: false, to: '' })
-  console.log('redirect', redirect)
 
   useEffect(() => {
     const getCompanyInfo = async () => {
@@ -77,12 +76,20 @@ const Welcome = ({ addCompanyInfo }) => {
   ) : redirect.status ? (
     <Redirect to={redirect.to} />
   ) : (
-    <>
-      <div>Welcome!!</div>
-      <div>Can we say hello to the team</div>
-      <Button label="Yes" onClick={(e) => responseClick(true)} />
-      <Button label="No" onClick={(e) => responseClick(false)} />
-    </>
+    <div className="welcome-page">
+      <div className="welcome-page-content">
+        <div className="welcome-title">Welcome to Foople!</div>
+        <div className="welcome-greeting">Can we say hello to the team?</div>
+        <div className="welcome-greeting-description">
+          We'll just post a message in Slack letting them know that the app has
+          been installed
+        </div>
+        <div className="welcome-ctas">
+          <Button label="Yes" onClick={(e) => responseClick(true)} />
+          <Button label="No" onClick={(e) => responseClick(false)} />
+        </div>
+      </div>
+    </div>
   )
 }
 
