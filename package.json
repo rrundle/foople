@@ -13,7 +13,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "nodemon": "nodemon app.js",
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "start:browser": "react-scripts start",
     "build:browser": "react-scripts build",
     "test:browser": "react-scripts test",
