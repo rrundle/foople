@@ -15,9 +15,9 @@
     "nodemon": "nodemon app.js",
     "start": "node app.js",
     "start:browser": "react-scripts start",
-    "build:browser": "react-scripts build",
-    "test:browser": "react-scripts test",
-    "eject:browser": "react-scripts eject"
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^1.1.2",
