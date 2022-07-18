@@ -18,11 +18,10 @@ const SlackAuth = ({ addUser, setAuth }) => {
   useEffect(() => {
     const authUser = async (parsed) => {
       const { code, error, state } = parsed
-      console.log('location!!!!!!!: ', location)
       if (error) {
         // TODO user likely declined the permissions
         // delete user from db
-        console.log('error!: ', error)
+        console.error('error! user likely declined the permissions: ', error)
       }
       // invalid query params
       if (!code && !state) {
@@ -59,10 +58,9 @@ const SlackAuth = ({ addUser, setAuth }) => {
           addUser({ token: body.token, ...decodedJwt })
           setAuth(true)
           setWorking(false)
-
           setRedirect({
             status: true,
-            to: '/signup/welcome',
+            to: '/app/dashboard/default',
           })
         } else if (body.message === 'authed existing user' && body.token) {
           Cookies.set('lunch-session', body.token, {
@@ -76,11 +74,14 @@ const SlackAuth = ({ addUser, setAuth }) => {
             status: true,
             to: '/app/dashboard/default',
           })
-          toast.success('Already a signed up, redirecting you to the dashboard')
+          if (state === 'login') {
+            toast.success('Welcome back!')
+          } else if (state === 'signup') {
+            toast.success('Already signed up, redirecting you to the dashboard')
+          }
         } else if (body.message === 'signup needed') {
           window.location = `https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`
         } else if (body.message === 'existing user' && body.token) {
-          console.log('need to finish sign up')
           // initial signup, get user permissions
           window.location = `https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email,&client_id=${process.env.REACT_APP_CLIENT_ID}&state=login.signup`
         } else {
@@ -99,7 +100,6 @@ const SlackAuth = ({ addUser, setAuth }) => {
 
     const query = window.location.search.substring(1)
     const parsed = qs.parse(query)
-    console.log('parsed in slack auth', parsed)
     if (parsed.error) {
       // redirect to home page
       setWorking(false)
@@ -116,7 +116,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         to: '/signup/new',
       })
     }
-  }, [addUser, setAuth])
+  }, [addUser, location, setAuth])
 
   return (
     <>

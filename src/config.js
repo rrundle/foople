@@ -4,7 +4,7 @@ require('dotenv').config()
 const baseUri = 'http://localhost:2999'
 
 //production
-// const baseURi = 'https://63c31503.ngrok.io'
+// const baseUri = 'https://4c03-72-211-216-5.ngrok.io'
 
 const cookieExpiration = 7
 

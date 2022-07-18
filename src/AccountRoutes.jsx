@@ -43,7 +43,6 @@ const AccountRoutes = ({
     if (auth && Object.keys(authData).length) {
       authUser()
     } else {
-      console.log('checking auth at logout')
       if (logoutRequested) {
         setLoggedInState(false)
       }
@@ -51,7 +50,6 @@ const AccountRoutes = ({
   }, [auth, authData])
 
   const checkAuth = async () => {
-    console.log('checkingAuth at login!')
     setCheckingAuth(true)
     // if user is already logged in
     if (auth && Object.keys(authData).length) {
@@ -59,7 +57,6 @@ const AccountRoutes = ({
       return setCheckingAuth(false)
     }
     const existingCookie = Cookies.get('lunch-session')
-    console.log('existingCookie', existingCookie)
     if (existingCookie) {
       // no auth in state but user has token, refresh auth
       return initializeAuth(history, location)
@@ -77,9 +74,6 @@ const AccountRoutes = ({
     setCheckingAuth(false)
   }
 
-  console.log('checkingAuth: ', checkingAuth)
-  console.log('loggedIn: ', loggedIn)
-
   return (
     <>
       {checkingAuth ? (
@@ -88,7 +82,7 @@ const AccountRoutes = ({
         </>
       ) : (
         <>
-          {true ? (
+          {loggedIn ? (
             <>
               <App>
                 <Switch>

@@ -12,7 +12,6 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
     }
   }
   const authToken = Cookies.get('lunch-session')
-  console.log('authToken: ', authToken)
   if (!authToken) return { authed: false, message: 'no token to auth with' }
 
   const options = {

@@ -14,7 +14,7 @@
 footer{
   background-color: $footer_bg_color;
   border-top: 1px solid $footer_top_bgr_color;
-  padding: 15px;
+  padding: 5px 15px;
   bottom: 0;
   left: 0;
   a{
@@ -45,7 +45,6 @@ footer{
 .page-wrapper{
   .page-body-wrapper{
     footer{      
-      margin-left: 255px;
       transition: all 0.3s ease;
       bottom: 0;
       z-index: 9;

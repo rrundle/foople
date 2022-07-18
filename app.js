@@ -5,6 +5,7 @@ const favicon = require('express-favicon')
 const bodyParser = require('body-parser')
 
 const { mongoClient } = require('./server/database')
+const { welcome } = require('./server/controllers/welcome-controller')
 const {
   slackLunchCommand,
   slackInteractiveCommand,
@@ -15,11 +16,7 @@ const {
   getUserSpots,
   deleteUserSpots,
 } = require('./server/controllers/web-controller')
-const {
-  checkAuth,
-  oauth,
-  welcome,
-} = require('./server/controllers/auth-controller')
+const { checkAuth, oauth } = require('./server/controllers/auth-controller')
 const {
   createSubscription,
   updateSubscription,
@@ -68,7 +65,7 @@ app.post('/spots/get', getUserSpots)
 /* Get user's spots for listing in admin */
 app.post('/spots/delete', deleteUserSpots)
 
-/* Send welcome message when user isntalls the app */
+/* Send welcome message when user installs the app */
 app.put('/welcome', welcome)
 
 /* slack calls this api when someone @mentions the app */
@@ -87,18 +84,14 @@ app.get('/payment/get-payments', getPaymentMethods)
 // WARNING proceed with caution
 // TODO Remove this when launching app
 app.post('/clear', async (req, res) => {
-  console.log('hello from clear: ', req.body)
-  console.log('process.env.MONGO_PASSWORD: ', process.env.MONGO_PASSWORD)
   const { teamId, password } = req.body
   if (password !== process.env.MONGO_PASSWORD) {
     res.sendStatus(404)
   } else {
     const spotsCollection = await mongoClient(teamId, 'spots')
     const spots = await spotsCollection.deleteMany({})
-    console.log('🚀 ~ file: app.js ~ line 99 ~ app.post ~ spots', spots)
     const userCollection = await mongoClient(teamId, 'auth')
     const user = await userCollection.deleteMany({})
-    console.log('🚀 ~ file: app.js ~ line 101 ~ app.post ~ user', user)
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'DELETE,GET,PATCH,POST,PUT',

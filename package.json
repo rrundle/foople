@@ -2,7 +2,7 @@
   "name": "foople",
   "version": "1.0.0",
   "engines": {
-    "node": "15.3.0",
+    "node": "14.18.0",
     "npm": "5.5.1"
   },
   "main": "app.js",
@@ -12,7 +12,7 @@
   "private": true,
   "scripts": {
     "precommit": "lint-staged",
-    "nodemon": "nodemon app.js",
+    "start:watch": "nodemon app.js",
     "start": "node app.js",
     "start:browser": "react-scripts start",
     "build": "react-scripts build",

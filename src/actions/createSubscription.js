@@ -20,16 +20,13 @@ const createSubscription = (paymentInfo) => async (dispatch, getState) => {
       'Content-Type': 'application/json',
     },
   }
-  console.log('options', options)
 
   try {
     const response = await fetch(
       `${baseUri}/payment/create-subscription`,
       options,
     )
-    console.log('response', response)
     const body = await response.json()
-    console.log('body', body)
     return body
   } catch (err) {
     console.error(err)

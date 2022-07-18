@@ -3,10 +3,6 @@ const { mongoClient } = require('../database')
 
 const buildHelpBlock = (body) => {
   return new Promise(async (resolve, reject) => {
-    console.log(
-      '🚀 ~ file: buildHelpBlock.js ~ line 5 ~ buildHelpBlock ~ body',
-      body.team_id,
-    )
     const message = {
       blocks: [
         {

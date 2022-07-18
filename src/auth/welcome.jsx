@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import { Redirect } from 'react-router-dom'
 
 import Button from '../components/button'
+import ButtonSecondary from '../components/button-secondary'
 import SvgSpinner from '../components/svg-spinner'
 import { baseUri } from '../config'
 import { COMPANY_SIGNUP_INFO } from '../constants/actionTypes'
@@ -32,7 +33,7 @@ const Welcome = ({ addCompanyInfo }) => {
         setCompanyInfo(body)
         addCompanyInfo(body)
       } catch (err) {
-        console.log('err: ', err)
+        console.error('err: ', err)
       } finally {
         setAppWorking(false)
       }
@@ -55,8 +56,6 @@ const Welcome = ({ addCompanyInfo }) => {
     try {
       const response = await fetch(`${baseUri}/welcome`, options)
       if (!response.ok) throw new Error('No slack Auth')
-      const body = await response.json()
-      console.log('body', body)
       setRedirect({
         status: true,
         to: '/app/dashboard/default',
@@ -85,8 +84,8 @@ const Welcome = ({ addCompanyInfo }) => {
           been installed
         </div>
         <div className="welcome-ctas">
+          <ButtonSecondary label="No" onClick={(e) => responseClick(false)} />
           <Button label="Yes" onClick={(e) => responseClick(true)} />
-          <Button label="No" onClick={(e) => responseClick(false)} />
         </div>
       </div>
     </div>

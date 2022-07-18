@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken')
 const { mongoClient } = require('./database')
 
 const generateJWT = (userData) => {
-  console.log('userData', userData)
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
@@ -54,7 +53,6 @@ const refreshJwt = async (jwtStatus) => {
   if (!teamId) return null
   const userCollection = await mongoClient(teamId, 'auth')
   const userData = await userCollection.find({}).toArray()
-  console.log('userData: ', userData)
   if (!userData.length) return undefined
   const [
     {
@@ -89,7 +87,6 @@ const refreshJwt = async (jwtStatus) => {
     trialPeriodStart,
     uid,
   }
-  console.log('payload', payload)
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: parseInt(expirationDate.getTime() / 1000, 10),

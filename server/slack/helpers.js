@@ -24,7 +24,6 @@ const getSpecificLunchSpots = ({ appId, text: type }) => {
   return new Promise(async (resolve) => {
     const spotsCollection = await mongoClient(appId, 'spots')
     const data = await spotsCollection.find().toArray()
-    console.log('data: ', data)
     // filter out the identifier entry
     const onlySpots = data.filter((entry) => entry.alias)
     // if less than 3 we dont have enough to make a poll, return an empty array

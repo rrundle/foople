@@ -19,6 +19,11 @@ const LandingPage = ({ children }) => {
             <div className="landing-page-hero__top">
               <p className="landing-title">Foople</p>
               <p className="landing-subtitle">The Food Poll</p>
+              <p className="landing-description">
+                Create a randomized poll in Slack to decide where to dine. The
+                days of arguing and taking forever to decide where to eat are
+                over.
+              </p>
               <div className="slack-signup-wrapper">
                 <a
                   href={`https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`}

@@ -14,17 +14,14 @@ import Welcome from './auth/welcome'
 const SignupRoutes = () => {
   const [verifiedSignup, setVerifiedSignup] = useState(true) // TODO CHANGE!!!
   const [checkingSignupStatus, setCheckingSignupStatus] = useState(false) // TODO CHANGE!!!
-  console.log('checkingSignupStatus: ', checkingSignupStatus)
-  console.log('verifiedSignup: ', verifiedSignup)
 
   useEffect(() => {
-    // checkSignupStatus()
+    checkSignupStatus()
     // only want to run this on mount
   }, [])
 
   const checkSignupStatus = async () => {
     const signupCookie = Cookies.get('signup-process')
-    console.log('signupCookie: ', signupCookie)
     if (!signupCookie) {
       setVerifiedSignup(false)
       return setCheckingSignupStatus(false)

@@ -9,13 +9,9 @@ const votingBlock = require('../slack/votingBlock')
 const buildInteractiveMessage = require('../slack/buildInteractiveMessage')
 const buildHelpBlock = require('../slack/buildHelpBlock')
 const messageResponse = require('../slack/messageResponse')
-const { sendEphemralToChannel } = require('../helpers/slack-messaging')
+const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 15 ~ slackLunchCommand ~ req',
-    req,
-  )
   const {
     channel_id: channelId,
     response_url: webhookUrl,
@@ -43,7 +39,7 @@ const slackLunchCommand = async (req, res) => {
       message =
         ':exclamation: Your free trial has expired. No problem, go to https://foople.com/app/account/payment to keep things going'
     }
-    return sendEphemralToChannel({
+    return sendEphemeralToChannel({
       accessToken: company.access_token,
       message,
       channelId,
@@ -52,7 +48,7 @@ const slackLunchCommand = async (req, res) => {
   }
 
   if (company.status === AccountStatus.Canceled) {
-    return sendEphemralToChannel({
+    return sendEphemeralToChannel({
       accessToken: company.access_token,
       message:
         ':no_entry_sign: Sorry but your account was canceled. Please contact your channel admin to get things running again.',
@@ -70,10 +66,6 @@ const slackLunchCommand = async (req, res) => {
   }
 
   const lunchData = await triggerSlackPoll(teamId, text)
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 70 ~ slackLunchCommand ~ lunchData',
-    lunchData,
-  )
   let data = {
     bearerToken: process.env.SLACK_TOKEN,
     callback_id: 'poll_creator',
@@ -83,13 +75,8 @@ const slackLunchCommand = async (req, res) => {
     trigger_id: triggerId,
     user: userId,
   }
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 80 ~ slackLunchCommand ~ data',
-    data,
-  )
 
   if (!Object.keys(lunchData).length) {
-    console.log('no length!')
     data.text =
       ':exclamation: You don\'t have enough lunch spots saved to create a poll. You can do so by typing "/lunch add"'
   } else {
@@ -97,7 +84,6 @@ const slackLunchCommand = async (req, res) => {
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
-    console.log('trying webhook!')
     fetch(webhookUrl, options({ body: JSON.stringify(data) }))
   } catch (err) {
     console.error('error from creating poll: ', err)
@@ -138,7 +124,6 @@ const slackInteractiveCommand = async (req, res) => {
         const spotsCollection = await mongoClient(teamId, 'spots')
         // check account status
         const matches = await spotsCollection.find({}).toArray()
-        console.log('matches: ', matches)
         // insert in the database if it doesn't already exist
         const data = await spotsCollection.updateOne(
           selectedSpot,
@@ -201,9 +186,7 @@ const slackInteractiveCommand = async (req, res) => {
 }
 
 const handleMention = async (req, res) => {
-  console.log('req.body: ', req.body)
   const { challenge } = req.body
-  console.log('challenge', challenge)
   res.status(200).json({
     challenge,
   })

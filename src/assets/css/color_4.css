@@ -3063,7 +3063,7 @@ body.dark-sidebar-body-mix
   transition: 0.3s;
 }
 .page-wrapper .page-body-wrapper .page-body {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 273px);
   margin-top: 80px;
   padding: 0 15px;
   position: relative;
@@ -14922,7 +14922,7 @@ p.data-attributes svg {
 footer {
   background-color: #fff;
   border-top: 1px solid #f6f7fb;
-  padding: 15px;
+  padding: 5px 15px;
   bottom: 0;
   left: 0;
 }
@@ -14949,7 +14949,6 @@ footer.footer-starter-kit {
   margin-left: 0 !important;
 }
 .page-wrapper .page-body-wrapper footer {
-  margin-left: 255px;
   -webkit-transition: all 0.3s ease;
   transition: all 0.3s ease;
   bottom: 0;
