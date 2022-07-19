@@ -33,7 +33,7 @@
     "jwt-decode": "^2.2.0",
     "moment": "^2.29.1",
     "mongodb": "^3.2.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "node-sass": "^4.14.0",
     "node-schedule": "^2.0.0",
     "passport": "^0.4.1",
