@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "http://localhost:3000/static/css/main.7429dfa8.chunk.css",
-    "main.js": "http://localhost:3000/static/js/main.55c4ae9b.chunk.js",
-    "main.js.map": "http://localhost:3000/static/js/main.55c4ae9b.chunk.js.map",
-    "runtime-main.js": "http://localhost:3000/static/js/runtime-main.8d739937.js",
-    "runtime-main.js.map": "http://localhost:3000/static/js/runtime-main.8d739937.js.map",
-    "static/css/2.7c2b4f5f.chunk.css": "http://localhost:3000/static/css/2.7c2b4f5f.chunk.css",
-    "static/js/2.1c25690e.chunk.js": "http://localhost:3000/static/js/2.1c25690e.chunk.js",
-    "static/js/2.1c25690e.chunk.js.map": "http://localhost:3000/static/js/2.1c25690e.chunk.js.map",
-    "index.html": "http://localhost:3000/index.html",
-    "precache-manifest.70fe9de38436fd60b6e8bd89ecfc09d9.js": "http://localhost:3000/precache-manifest.70fe9de38436fd60b6e8bd89ecfc09d9.js",
-    "service-worker.js": "http://localhost:3000/service-worker.js",
-    "static/css/2.7c2b4f5f.chunk.css.map": "http://localhost:3000/static/css/2.7c2b4f5f.chunk.css.map",
-    "static/css/main.7429dfa8.chunk.css.map": "http://localhost:3000/static/css/main.7429dfa8.chunk.css.map",
-    "static/media/index.scss": "http://localhost:3000/static/media/zw.58e2cbd6.svg",
-    "static/media/7.jpg": "http://localhost:3000/static/media/7.5191071c.jpg",
-    "static/media/Slack_screencast.gif": "http://localhost:3000/static/media/Slack_screencast.52c80961.gif",
-    "static/media/lunch-poll-logo.svg": "http://localhost:3000/static/media/lunch-poll-logo.c784b059.svg"
+    "main.css": "/static/css/main.54100918.chunk.css",
+    "main.js": "/static/js/main.d2066f21.chunk.js",
+    "main.js.map": "/static/js/main.d2066f21.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.752a1036.js",
+    "runtime-main.js.map": "/static/js/runtime-main.752a1036.js.map",
+    "static/css/2.7c2b4f5f.chunk.css": "/static/css/2.7c2b4f5f.chunk.css",
+    "static/js/2.33027497.chunk.js": "/static/js/2.33027497.chunk.js",
+    "static/js/2.33027497.chunk.js.map": "/static/js/2.33027497.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.ca90fee1ecac21cbc69c94414c5c4314.js": "/precache-manifest.ca90fee1ecac21cbc69c94414c5c4314.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.7c2b4f5f.chunk.css.map": "/static/css/2.7c2b4f5f.chunk.css.map",
+    "static/css/main.54100918.chunk.css.map": "/static/css/main.54100918.chunk.css.map",
+    "static/media/index.scss": "/static/media/zw.58e2cbd6.svg",
+    "static/media/7.jpg": "/static/media/7.5191071c.jpg",
+    "static/media/Slack_screencast.gif": "/static/media/Slack_screencast.52c80961.gif",
+    "static/media/lunch-poll-logo.svg": "/static/media/lunch-poll-logo.c784b059.svg"
   }
 }
