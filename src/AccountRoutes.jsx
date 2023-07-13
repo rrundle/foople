@@ -37,6 +37,9 @@ const AccountRoutes = ({
 
   useEffect(() => {
     console.log('Account Routes!')
+    console.log('location: ', location)
+    console.log('slash?: ', `${process.env.PUBLIC_URL}/`)
+    console.log('base?: ', process.env.PUBLIC_URL)
     checkAuth()
   }, [])
 
