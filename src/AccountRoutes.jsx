@@ -181,7 +181,7 @@ const AccountRoutes = ({
               />
               <Route
                 exact
-                path={`${process.env.PUBLIC_URL}/` || process.env.PUBLIC_URL}
+                path={'/' || 'https://foople.herokuapp.com'}
                 component={HomePage}
               />
               <Route
