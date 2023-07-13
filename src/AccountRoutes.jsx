@@ -41,13 +41,9 @@ const AccountRoutes = ({
     console.log(
       'slash?: ',
       `${process.env.PUBLIC_URL}/` ===
-        `https://foople.herokuapp.com/${location.pathname}`,
-    )
-    console.log(
-      'base?: ',
-      process.env.PUBLIC_URL ===
         `https://foople.herokuapp.com${location.pathname}`,
     )
+    console.log('process.env.PUBLIC_URL?: ', process.env.PUBLIC_URL)
     checkAuth()
   }, [])
 
