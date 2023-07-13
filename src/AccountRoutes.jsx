@@ -8,6 +8,7 @@ import './index.scss'
 import App from './components/app'
 import initializeAuth from './actions/initializeAuth'
 import { cookieExpiration } from './config'
+import { baseUrl } from './Router'
 
 // Import custom Components
 import Dashboard from './components/dashboard'
@@ -36,14 +37,6 @@ const AccountRoutes = ({
   const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
 
   useEffect(() => {
-    console.log('Account Routes!')
-    console.log('location: ', location)
-    console.log(
-      'slash?: ',
-      `${process.env.PUBLIC_URL}/` ===
-        `https://foople.herokuapp.com${location.pathname}`,
-    )
-    console.log('process.env.PUBLIC_URL?: ', process.env.PUBLIC_URL)
     checkAuth()
   }, [])
 
@@ -97,73 +90,63 @@ const AccountRoutes = ({
                   {/* dashboard menu */}
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/app`}
+                    path={`${baseUrl}/app`}
                     render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
+                      <Redirect to={`${baseUrl}/app/dashboard/default`} />
                     )}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/signup/welcome`}
+                    path={`${baseUrl}/signup/welcome`}
                     component={Welcome}
                   />
-                  {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Default} /> */}
+                  {/* <Route exact path={`${baseUrl}/`} component={Default} /> */}
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                    path={`${baseUrl}/app/dashboard/default`}
                     component={Dashboard}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/table/datatable`}
+                    path={`${baseUrl}/app/table/datatable`}
                     component={DataTableComponent}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/users/userEdit`}
+                    path={`${baseUrl}/app/users/userEdit`}
                     component={UserEdit}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/account/payment`}
+                    path={`${baseUrl}/app/account/payment`}
                     component={BillingPage}
                   />
                   {/* Pricing */}
                   <Route
-                    path={`${process.env.PUBLIC_URL}/price/pricing`}
+                    path={`${baseUrl}/price/pricing`}
                     component={Pricing}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/login`}
+                    path={`${baseUrl}/login`}
                     render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
+                      <Redirect to={`${baseUrl}/app/dashboard/default`} />
                     )}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/signup`}
+                    path={`${baseUrl}/signup`}
                     render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
+                      <Redirect to={`${baseUrl}/app/dashboard/default`} />
                     )}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/`}
+                    path={`${baseUrl}/`}
                     render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
+                      <Redirect to={`${baseUrl}/app/dashboard/default`} />
                     )}
                   />
                   <Route
                     path={'*'}
                     render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
+                      <Redirect to={`${baseUrl}/app/dashboard/default`} />
                     )}
                   />
                 </Switch>
@@ -171,14 +154,8 @@ const AccountRoutes = ({
             </>
           ) : (
             <Switch>
-              <Route
-                path={`${process.env.PUBLIC_URL}/login`}
-                component={Signin}
-              />
-              <Route
-                path={`${process.env.PUBLIC_URL}/signup`}
-                component={SignupRoutes}
-              />
+              <Route path={`${baseUrl}/login`} component={Signin} />
+              <Route path={`${baseUrl}/signup`} component={SignupRoutes} />
               <Route
                 exact
                 path={'/' || 'https://foople.herokuapp.com'}
@@ -186,9 +163,7 @@ const AccountRoutes = ({
               />
               <Route
                 path={'*'}
-                render={() => (
-                  <Redirect to={`${process.env.PUBLIC_URL}/login`} />
-                )}
+                render={() => <Redirect to={`${baseUrl}/login`} />}
               />
             </Switch>
           )}
