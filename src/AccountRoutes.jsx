@@ -36,6 +36,7 @@ const AccountRoutes = ({
   const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
 
   useEffect(() => {
+    console.log('Account Routes!')
     checkAuth()
   }, [])
 
@@ -173,7 +174,7 @@ const AccountRoutes = ({
               />
               <Route
                 exact
-                path={`${process.env.PUBLIC_URL}/`}
+                path={`${process.env.PUBLIC_URL}/` || process.env.PUBLIC_URL}
                 component={HomePage}
               />
               <Route
