@@ -12,6 +12,7 @@ import ResetPwd from './pages/resetPwd'
 import SlackAuth from './auth/slackAuth'
 
 const Router = () => {
+  console.log('in the router!: ', process.env.PUBLIC_URL)
   return (
     <Switch>
       <Route
