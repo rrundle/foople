@@ -6,6 +6,8 @@ import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { toast } from 'react-toastify'
 
+import { baseUrl } from '../Router'
+
 import { baseUri, cookieExpiration } from '../config'
 import SvgSpinner from '../components/svg-spinner'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
@@ -27,7 +29,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
       if (!code && !state) {
         return setRedirect({
           status: true,
-          to: '/signup/new',
+          to: `${baseUrl}/signup/new`,
         })
       }
 
@@ -60,7 +62,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: '/app/dashboard/default',
+            to: `${baseUrl}/app/dashboard/default`,
           })
         } else if (body.message === 'authed existing user' && body.token) {
           Cookies.set('lunch-session', body.token, {
@@ -72,7 +74,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: '/app/dashboard/default',
+            to: `${baseUrl}/app/dashboard/default`,
           })
           if (state === 'login') {
             toast.success('Welcome back!')
@@ -92,7 +94,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         setWorking(false)
         setRedirect({
           status: true,
-          to: '/signup/new',
+          to: `${baseUrl}/signup/new`,
         })
         console.error(err)
       }
@@ -105,7 +107,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
       setWorking(false)
       return setRedirect({
         status: true,
-        to: '/signup/new',
+        to: `${baseUrl}/signup/new`,
       })
     }
     if (Object.keys(parsed).length) {
@@ -113,7 +115,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
     } else {
       setRedirect({
         status: true,
-        to: '/signup/new',
+        to: `${baseUrl}/signup/new`,
       })
     }
   }, [addUser, location, setAuth])

@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import Cookies from 'js-cookie'
 import { Redirect } from 'react-router-dom'
 
+import { baseUrl } from '../Router'
 import Button from '../components/button'
 import ButtonSecondary from '../components/button-secondary'
 import SvgSpinner from '../components/svg-spinner'
@@ -58,14 +59,14 @@ const Welcome = ({ addCompanyInfo }) => {
       if (!response.ok) throw new Error('No slack Auth')
       setRedirect({
         status: true,
-        to: '/app/dashboard/default',
+        to: `${baseUrl}/app/dashboard/default`,
       })
     } catch (err) {
       console.error(err)
       // TODO Say we couldnt say hello
       setRedirect({
         status: true,
-        to: '/app/dashboard/default',
+        to: `${baseUrl}/app/dashboard/default`,
       })
     }
   }
