@@ -2,6 +2,7 @@ import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
 import { baseUri } from '../config'
+import { baseUrl } from '../Router'
 
 const initializeAuth = (history, location) => async (dispatch, getState) => {
   const state = getState()
@@ -30,9 +31,9 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
       Cookies.remove('lunch-session')
       dispatch({ type: SET_AUTH, value: false })
       if (location.pathname === '/') {
-        history.push(`${process.env.PUBLIC_URL}/`)
+        history.push(`${baseUrl}/`)
       } else {
-        history.push(`${process.env.PUBLIC_URL}/login`)
+        history.push(`${baseUrl}/login`)
       }
       throw new Error('Failed initializeAuth')
     }
