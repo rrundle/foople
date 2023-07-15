@@ -5,6 +5,8 @@ import Cookies from 'js-cookie'
 import './index.scss'
 import SvgSpinner from './components/svg-spinner'
 
+import { baseUrl } from './Router'
+
 // Signup Components
 import Signup from './auth/signup'
 import Welcome from './auth/welcome'
@@ -37,26 +39,16 @@ const SignupRoutes = () => {
         <SvgSpinner />
       ) : verifiedSignup ? (
         <>
+          <Route exact path={`${baseUrl}/signup/welcome`} component={Welcome} />
+          <Route exact path={`${baseUrl}/signup/new`} component={Signup} />
           <Route
             exact
-            path={`${process.env.PUBLIC_URL}/signup/welcome`}
-            component={Welcome}
-          />
-          <Route
-            exact
-            path={`${process.env.PUBLIC_URL}/signup/new`}
-            component={Signup}
-          />
-          <Route
-            exact
-            path={`${process.env.PUBLIC_URL}/signup`}
-            render={() => (
-              <Redirect to={`${process.env.PUBLIC_URL}/signup/new`} />
-            )}
+            path={`${baseUrl}/signup`}
+            render={() => <Redirect to={`${baseUrl}/signup/new`} />}
           />
         </>
       ) : (
-        <Redirect to={`${process.env.PUBLIC_URL}/signup/new`} />
+        <Redirect to={`${baseUrl}/signup/new`} />
       )}
     </>
   )
