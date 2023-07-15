@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
 import './index.scss'
 import SvgSpinner from './components/svg-spinner'
 
-import { baseUrl } from './Router'
+import { baseUri } from './config'
 
 // Signup Components
 import Signup from './auth/signup'
@@ -39,16 +39,16 @@ const SignupRoutes = () => {
         <SvgSpinner />
       ) : verifiedSignup ? (
         <>
-          <Route exact path={`${baseUrl}/signup/welcome`} component={Welcome} />
-          <Route exact path={`${baseUrl}/signup/new`} component={Signup} />
+          <Route exact path={`${baseUri}/signup/welcome`} component={Welcome} />
+          <Route exact path={`${baseUri}/signup/new`} component={Signup} />
           <Route
             exact
-            path={`${baseUrl}/signup`}
-            render={() => <Redirect to={`${baseUrl}/signup/new`} />}
+            path={`${baseUri}/signup`}
+            render={() => <Redirect to={`${baseUri}/signup/new`} />}
           />
         </>
       ) : (
-        <Redirect to={`${baseUrl}/signup/new`} />
+        <Redirect to={`${baseUri}/signup/new`} />
       )}
     </>
   )

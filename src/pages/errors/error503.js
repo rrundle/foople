@@ -2,6 +2,8 @@ import React, { Fragment } from 'react'
 import sad from '../../assets/images/other-images/sad.png'
 import { Link } from 'react-router-dom'
 
+import { baseUri } from '../../config'
+
 const Error503 = () => {
   return (
     <Fragment>
@@ -21,7 +23,7 @@ const Error503 = () => {
             </div>
             <div>
               <Link
-                to={`${process.env.PUBLIC_URL}/dashboard/default`}
+                to={`${baseUri}/dashboard/default`}
                 className="btn btn-secondary-gradien"
               >
                 {' '}

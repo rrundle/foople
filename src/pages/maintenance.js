@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
+import { baseUri } from '../config'
+
 const Maintenance = () => {
   return (
     <Fragment>
@@ -29,7 +31,7 @@ const Maintenance = () => {
             <div>
               <Link
                 className="btn btn-info-gradien btn-lg text-light"
-                to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                to={`${baseUri}/app/dashboard/default`}
               >
                 BACK TO HOME PAGE
               </Link>

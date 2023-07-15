@@ -11,29 +11,24 @@ import ResetPwd from './pages/resetPwd'
 // Auth
 import SlackAuth from './auth/slackAuth'
 
-// Config
-import { config } from './config'
-
-const environment = config.get('environment')
-export const baseUrl =
-  environment === 'dev' ? '' : 'https://foople.herokuapp.com'
+import { baseUri } from './config'
 
 const Router = () => {
-  console.log('in the router!: ', baseUrl)
+  console.log('in the router!: ', baseUri)
   return (
     <Switch>
-      <Route exact path={`${baseUrl}/`} component={AccountRoutes} />
+      <Route exact path={`${baseUri}/`} component={AccountRoutes} />
 
-      <Route path={`${baseUrl}/app`} component={AccountRoutes} />
+      <Route path={`${baseUri}/app`} component={AccountRoutes} />
 
-      <Route exact path={`${baseUrl}/slack-auth`} component={SlackAuth} />
+      <Route exact path={`${baseUri}/slack-auth`} component={SlackAuth} />
 
-      <Route path={`${baseUrl}/signup`} component={AccountRoutes} />
+      <Route path={`${baseUri}/signup`} component={AccountRoutes} />
 
-      <Route path={`${baseUrl}/login`} component={AccountRoutes} />
+      <Route path={`${baseUri}/login`} component={AccountRoutes} />
 
-      <Route path={`${baseUrl}/pages/forgetPwd`} component={ForgetPwd} />
-      <Route path={`${baseUrl}/pages/resetPwd`} component={ResetPwd} />
+      <Route path={`${baseUri}/pages/forgetPwd`} component={ForgetPwd} />
+      <Route path={`${baseUri}/pages/resetPwd`} component={ResetPwd} />
       <Route component={AccountRoutes} />
     </Switch>
   )

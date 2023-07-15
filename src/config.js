@@ -1,10 +1,10 @@
 require('dotenv').config()
 
 // dev
-const baseUri = 'http://localhost:2999'
-
-//production
-// const baseUri = 'https://4c03-72-211-216-5.ngrok.io'
+const baseUri =
+  process.env.REACT_APP_ENV === 'dev'
+    ? 'http://localhost:2999'
+    : 'https://foople.herokuapp.com'
 
 const cookieExpiration = 7
 

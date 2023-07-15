@@ -6,8 +6,6 @@ import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { toast } from 'react-toastify'
 
-import { baseUrl } from '../Router'
-
 import { baseUri, cookieExpiration } from '../config'
 import SvgSpinner from '../components/svg-spinner'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
@@ -19,7 +17,10 @@ const SlackAuth = ({ addUser, setAuth }) => {
 
   useEffect(() => {
     const authUser = async (parsed) => {
+      console.log('file: slackAuth.jsx:20 ~ parsed:', parsed)
       const { code, error, state } = parsed
+      console.log('file: slackAuth.jsx:21 ~ state:', state)
+      console.log('file: slackAuth.jsx:21 ~ code:', code)
       if (error) {
         // TODO user likely declined the permissions
         // delete user from db
@@ -27,9 +28,10 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
       // invalid query params
       if (!code && !state) {
+        console.log('routing to /signup/new')
         return setRedirect({
           status: true,
-          to: `${baseUrl}/signup/new`,
+          to: `${baseUri}/signup/new`,
         })
       }
 
@@ -45,6 +47,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
 
       try {
+        console.log('hitting oauth')
         const response = await fetch(`${baseUri}/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
@@ -62,7 +65,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: `${baseUrl}/app/dashboard/default`,
+            to: `${baseUri}/app/dashboard/default`,
           })
         } else if (body.message === 'authed existing user' && body.token) {
           Cookies.set('lunch-session', body.token, {
@@ -74,7 +77,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: `${baseUrl}/app/dashboard/default`,
+            to: `${baseUri}/app/dashboard/default`,
           })
           if (state === 'login') {
             toast.success('Welcome back!')
@@ -94,20 +97,22 @@ const SlackAuth = ({ addUser, setAuth }) => {
         setWorking(false)
         setRedirect({
           status: true,
-          to: `${baseUrl}/signup/new`,
+          to: `${baseUri}/signup/new`,
         })
         console.error(err)
       }
     }
 
     const query = window.location.search.substring(1)
+    console.log('file: slackAuth.jsx:106 ~ query:', query)
     const parsed = qs.parse(query)
+    console.log('file: slackAuth.jsx:108 ~ parsed:', parsed)
     if (parsed.error) {
       // redirect to home page
       setWorking(false)
       return setRedirect({
         status: true,
-        to: `${baseUrl}/signup/new`,
+        to: `${baseUri}/signup/new`,
       })
     }
     if (Object.keys(parsed).length) {
@@ -115,7 +120,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
     } else {
       setRedirect({
         status: true,
-        to: `${baseUrl}/signup/new`,
+        to: `${baseUri}/signup/new`,
       })
     }
   }, [addUser, location, setAuth])
