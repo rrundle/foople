@@ -33,6 +33,7 @@ const AccountRoutes = ({
   logoutRequested,
 }) => {
   const location = useLocation()
+  console.log('file: AccountRoutes.jsx:36 ~ location:', location)
   const [loggedIn, setLoggedInState] = useState(false) // TODO CHANGE!!
   const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
 
