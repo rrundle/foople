@@ -20,8 +20,6 @@ const Router = () => {
     <Switch>
       <Route exact path={`${baseUri}/`} component={AccountRoutes} />
 
-      <Route exact path={baseUri} component={AccountRoutes} />
-
       <Route path={`${baseUri}/app`} component={AccountRoutes} />
 
       <Route exact path={`${baseUri}/slack-auth`} component={SlackAuth} />
@@ -33,6 +31,8 @@ const Router = () => {
       <Route path={`${baseUri}/pages/forgetPwd`} component={ForgetPwd} />
 
       <Route path={`${baseUri}/pages/resetPwd`} component={ResetPwd} />
+
+      <Route component={AccountRoutes} />
     </Switch>
   )
 }
