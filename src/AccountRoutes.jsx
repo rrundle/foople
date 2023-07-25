@@ -34,8 +34,9 @@ const AccountRoutes = ({
 }) => {
   const location = useLocation()
   console.log('file: AccountRoutes.jsx:36 ~ location:', location)
-  const [loggedIn, setLoggedInState] = useState(false) // TODO CHANGE!!
-  const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
+  const [loggedIn, setLoggedInState] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
+  debugger
 
   useEffect(() => {
     checkAuth()
@@ -75,6 +76,8 @@ const AccountRoutes = ({
     setLoggedInState(true)
     setCheckingAuth(false)
   }
+
+  console.log('file: AccountRoutes.jsx:38 ~ loggedIn:', loggedIn)
 
   return (
     <>
