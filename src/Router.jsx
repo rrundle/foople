@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import './index.scss'
 import AccountRoutes from './AccountRoutes'
 
 // Import custom Components
+import SvgSpinner from './components/svg-spinner'
 import ForgetPwd from './pages/forgetPwd'
 import ResetPwd from './pages/resetPwd'
 
