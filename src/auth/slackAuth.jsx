@@ -107,6 +107,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
     console.log('file: slackAuth.jsx:106 ~ query:', query)
     const parsed = qs.parse(query)
     console.log('file: slackAuth.jsx:108 ~ parsed:', parsed)
+    debugger
     if (parsed.error) {
       // redirect to home page
       setWorking(false)

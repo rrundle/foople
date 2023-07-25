@@ -15,6 +15,7 @@ import { baseUri } from './config'
 
 const Router = () => {
   console.log('in the router!: ', baseUri)
+  debugger
   return (
     <Switch>
       <Route exact path={`${baseUri}/`} component={AccountRoutes} />
