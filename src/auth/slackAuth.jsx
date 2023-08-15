@@ -107,22 +107,23 @@ const SlackAuth = ({ addUser, setAuth }) => {
     console.log('file: slackAuth.jsx:106 ~ query:', query)
     const parsed = qs.parse(query)
     console.log('file: slackAuth.jsx:108 ~ parsed:', parsed)
-    debugger
     if (parsed.error) {
-      // redirect to home page
-      setWorking(false)
-      return setRedirect({
-        status: true,
-        to: `${baseUri}/signup/new`,
-      })
+      // redirect to signup page
+      console.log('redirecting to signup page')
+      // setWorking(false)
+      // return setRedirect({
+      //   status: true,
+      //   to: `/signup/new`,
+      // })
     }
     if (Object.keys(parsed).length) {
       authUser(parsed)
     } else {
-      setRedirect({
-        status: true,
-        to: `${baseUri}/signup/new`,
-      })
+      console.log('redirecting to signup page 2')
+      // setRedirect({
+      //   status: true,
+      //   to: `/signup/new`,
+      // })
     }
   }, [addUser, location, setAuth])
 
