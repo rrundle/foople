@@ -29,10 +29,12 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
     if (!response.ok) {
       Cookies.remove('lunch-session')
       dispatch({ type: SET_AUTH, value: false })
+      console.log('location.pathname in initializeAuth', location.pathname)
       if (location.pathname === '/') {
-        history.push(`${baseUri}/`)
+        history.push('/')
       } else {
-        history.push(`${baseUri}/login`)
+        console.log('pushing to /login')
+        history.push('/login')
       }
       throw new Error('Failed initializeAuth')
     }
