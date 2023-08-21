@@ -6,7 +6,7 @@ import { baseUri } from '../config'
 
 const Login = ({ history }) => {
   const loginAuth = () => {
-    history.push(`${baseUri}/app/dashboard/default`)
+    history.push(`/app/dashboard/default`)
   }
 
   return (

@@ -23,7 +23,7 @@ const Error403 = () => {
             </div>
             <div>
               <Link
-                to={`${baseUri}/dashboard/default`}
+                to={`/dashboard/default`}
                 className="btn btn-success-gradien"
               >
                 {' '}

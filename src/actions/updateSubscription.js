@@ -20,10 +20,7 @@ const updateSubscription = (paymentInfo) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(
-      `${baseUri}/payment/update-subscription`,
-      options,
-    )
+    const response = await fetch(`/payment/update-subscription`, options)
     const body = await response.json()
     return body
   } catch (err) {

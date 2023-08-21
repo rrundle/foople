@@ -25,7 +25,7 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${baseUri}/check-auth`, options)
+    const response = await fetch(`/check-auth`, options)
     if (!response.ok) {
       Cookies.remove('lunch-session')
       dispatch({ type: SET_AUTH, value: false })

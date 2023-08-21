@@ -94,64 +94,44 @@ const AccountRoutes = ({
                   {/* dashboard menu */}
                   <Route
                     exact
-                    path={`${baseUri}/app`}
-                    render={() => (
-                      <Redirect to={`${baseUri}/app/dashboard/default`} />
-                    )}
+                    path={`/app`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
+                  <Route exact path={`/signup/welcome`} component={Welcome} />
+                  {/* <Route exact path={`/`} component={Default} /> */}
                   <Route
-                    exact
-                    path={`${baseUri}/signup/welcome`}
-                    component={Welcome}
-                  />
-                  {/* <Route exact path={`${baseUri}/`} component={Default} /> */}
-                  <Route
-                    path={`${baseUri}/app/dashboard/default`}
+                    path={`/app/dashboard/default`}
                     component={Dashboard}
                   />
                   <Route
-                    path={`${baseUri}/app/table/datatable`}
+                    path={`/app/table/datatable`}
                     component={DataTableComponent}
                   />
+                  <Route path={`/app/users/userEdit`} component={UserEdit} />
                   <Route
-                    path={`${baseUri}/app/users/userEdit`}
-                    component={UserEdit}
-                  />
-                  <Route
-                    path={`${baseUri}/app/account/payment`}
+                    path={`/app/account/payment`}
                     component={BillingPage}
                   />
                   {/* Pricing */}
+                  <Route path={`/price/pricing`} component={Pricing} />
                   <Route
-                    path={`${baseUri}/price/pricing`}
-                    component={Pricing}
+                    exact
+                    path={`/login`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     exact
-                    path={`${baseUri}/login`}
-                    render={() => (
-                      <Redirect to={`${baseUri}/app/dashboard/default`} />
-                    )}
+                    path={`/signup`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     exact
-                    path={`${baseUri}/signup`}
-                    render={() => (
-                      <Redirect to={`${baseUri}/app/dashboard/default`} />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path={`${baseUri}/`}
-                    render={() => (
-                      <Redirect to={`${baseUri}/app/dashboard/default`} />
-                    )}
+                    path={`/`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     path={'*'}
-                    render={() => (
-                      <Redirect to={`${baseUri}/app/dashboard/default`} />
-                    )}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                 </Switch>
               </App>
@@ -159,7 +139,7 @@ const AccountRoutes = ({
           ) : (
             <Switch>
               <Route path={`/login`} component={Signin} />
-              <Route path={`${baseUri}/signup`} component={SignupRoutes} />
+              <Route path={`/signup`} component={SignupRoutes} />
               <Route
                 exact
                 path={'/' || 'https://foople.herokuapp.com'}

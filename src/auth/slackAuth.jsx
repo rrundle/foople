@@ -31,7 +31,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         console.log('routing to /signup/new')
         return setRedirect({
           status: true,
-          to: `${baseUri}/signup/new`,
+          to: `/signup/new`,
         })
       }
 
@@ -48,7 +48,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
 
       try {
         console.log('hitting oauth')
-        const response = await fetch(`${baseUri}/oauth`, options)
+        const response = await fetch(`/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
         if (response.status === 403) throw new Error('Stripe Error')
@@ -65,7 +65,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: `${baseUri}/app/dashboard/default`,
+            to: `/app/dashboard/default`,
           })
         } else if (body.message === 'authed existing user' && body.token) {
           Cookies.set('lunch-session', body.token, {
@@ -77,7 +77,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
           setWorking(false)
           setRedirect({
             status: true,
-            to: `${baseUri}/app/dashboard/default`,
+            to: `/app/dashboard/default`,
           })
           if (state === 'login') {
             toast.success('Welcome back!')
@@ -97,7 +97,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         setWorking(false)
         setRedirect({
           status: true,
-          to: `${baseUri}/signup/new`,
+          to: `/signup/new`,
         })
         console.error(err)
       }

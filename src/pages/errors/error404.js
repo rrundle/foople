@@ -23,7 +23,7 @@ const Error404 = () => {
             </div>
             <div>
               <Link
-                to={`${baseUri}/dashboard/default`}
+                to={`/dashboard/default`}
                 className="btn btn-danger-gradien"
               >
                 {' '}

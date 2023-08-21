@@ -13,7 +13,7 @@ export const fetchSpots = () => async (dispatch, getState) => {
         'Content-Type': 'application/json',
       },
     }
-    const response = await fetch(`${baseUri}/spots/get`, options)
+    const response = await fetch(`/spots/get`, options)
     if (!response.ok) throw new Error('Failed initializeAuth')
     const body = await response.json()
     dispatch({ type: SET_USERS_SPOTS, value: body })
@@ -33,7 +33,7 @@ export const deleteSpots = (spots) => async (dispatch, getState) => {
         'Content-Type': 'application/json',
       },
     }
-    const response = await fetch(`${baseUri}/spots/delete`, options)
+    const response = await fetch(`/spots/delete`, options)
     if (!response.ok) throw new Error('Failed initializeAuth')
     await response.json()
     const updatedList = usersSpots.filter((val) => !spots.includes(val.id))

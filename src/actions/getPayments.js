@@ -16,7 +16,7 @@ const getPayments = () => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${baseUri}/payment/get-payments`, options)
+    const response = await fetch(`/payment/get-payments`, options)
     const body = await response.json()
     return body
   } catch (err) {

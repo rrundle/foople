@@ -23,7 +23,7 @@ const Error503 = () => {
             </div>
             <div>
               <Link
-                to={`${baseUri}/dashboard/default`}
+                to={`/dashboard/default`}
                 className="btn btn-secondary-gradien"
               >
                 {' '}

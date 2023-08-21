@@ -18,19 +18,19 @@ const Router = () => {
   debugger
   return (
     <Switch>
-      <Route exact path={`${baseUri}/`} component={AccountRoutes} />
+      <Route exact path={`/`} component={AccountRoutes} />
 
-      <Route path={`${baseUri}/app`} component={AccountRoutes} />
+      <Route path={`/app`} component={AccountRoutes} />
 
-      <Route exact path={`${baseUri}/slack-auth`} component={SlackAuth} />
+      <Route exact path={`/slack-auth`} component={SlackAuth} />
 
-      <Route path={`${baseUri}/signup`} component={AccountRoutes} />
+      <Route path={`/signup`} component={AccountRoutes} />
 
       <Route path={`/login`} component={AccountRoutes} />
 
-      <Route path={`${baseUri}/pages/forgetPwd`} component={ForgetPwd} />
+      <Route path={`/pages/forgetPwd`} component={ForgetPwd} />
 
-      <Route path={`${baseUri}/pages/resetPwd`} component={ResetPwd} />
+      <Route path={`/pages/resetPwd`} component={ResetPwd} />
 
       <Route component={AccountRoutes} />
     </Switch>

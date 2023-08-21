@@ -39,16 +39,16 @@ const SignupRoutes = () => {
         <SvgSpinner />
       ) : verifiedSignup ? (
         <>
-          <Route exact path={`${baseUri}/signup/welcome`} component={Welcome} />
-          <Route exact path={`${baseUri}/signup/new`} component={Signup} />
+          <Route exact path={`/signup/welcome`} component={Welcome} />
+          <Route exact path={`/signup/new`} component={Signup} />
           <Route
             exact
-            path={`${baseUri}/signup`}
-            render={() => <Redirect to={`${baseUri}/signup/new`} />}
+            path={`/signup`}
+            render={() => <Redirect to={`/signup/new`} />}
           />
         </>
       ) : (
-        <Redirect to={`${baseUri}/signup/new`} />
+        <Redirect to={`/signup/new`} />
       )}
     </>
   )

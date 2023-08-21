@@ -28,7 +28,7 @@ const Welcome = ({ addCompanyInfo }) => {
       }
 
       try {
-        const response = await fetch(`${baseUri}/company/get`, options)
+        const response = await fetch(`/company/get`, options)
         const body = await response.json()
         setCompanyInfo(body)
         addCompanyInfo(body)
@@ -54,18 +54,18 @@ const Welcome = ({ addCompanyInfo }) => {
     }
 
     try {
-      const response = await fetch(`${baseUri}/welcome`, options)
+      const response = await fetch(`/welcome`, options)
       if (!response.ok) throw new Error('No slack Auth')
       setRedirect({
         status: true,
-        to: `${baseUri}/app/dashboard/default`,
+        to: `/app/dashboard/default`,
       })
     } catch (err) {
       console.error(err)
       // TODO Say we couldnt say hello
       setRedirect({
         status: true,
-        to: `${baseUri}/app/dashboard/default`,
+        to: `/app/dashboard/default`,
       })
     }
   }

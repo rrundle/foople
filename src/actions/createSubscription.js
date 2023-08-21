@@ -22,10 +22,7 @@ const createSubscription = (paymentInfo) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(
-      `${baseUri}/payment/create-subscription`,
-      options,
-    )
+    const response = await fetch(`/payment/create-subscription`, options)
     const body = await response.json()
     return body
   } catch (err) {

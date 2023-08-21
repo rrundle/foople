@@ -44,7 +44,7 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
         </div>
         <ul className="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
           {/* <li>
-            <Link to={`${baseUri}/users/userEdit`}>
+            <Link to={`/users/userEdit`}>
               <Settings />
               Settings
             </Link>
@@ -52,13 +52,13 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
           {isPaymentEnabled && (
             <>
               <li>
-                <Link to={`${baseUri}/price/pricing`}>
+                <Link to={`/price/pricing`}>
                   <DollarSign />
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to={`${baseUri}/app/account/payment`}>
+                <Link to={`/app/account/payment`}>
                   <CreditCard />
                   Billing
                 </Link>

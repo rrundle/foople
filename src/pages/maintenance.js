@@ -31,7 +31,7 @@ const Maintenance = () => {
             <div>
               <Link
                 className="btn btn-info-gradien btn-lg text-light"
-                to={`${baseUri}/app/dashboard/default`}
+                to={`/app/dashboard/default`}
               >
                 BACK TO HOME PAGE
               </Link>
