@@ -25,7 +25,7 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
     setAuth(false)
     setUser({})
     requestLogout()
-    history.push(`${baseUri}/login`)
+    history.push(`/login`)
   }
 
   return (

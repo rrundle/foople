@@ -158,17 +158,14 @@ const AccountRoutes = ({
             </>
           ) : (
             <Switch>
-              <Route path={`${baseUri}/login`} component={Signin} />
+              <Route path={`/login`} component={Signin} />
               <Route path={`${baseUri}/signup`} component={SignupRoutes} />
               <Route
                 exact
                 path={'/' || 'https://foople.herokuapp.com'}
                 component={HomePage}
               />
-              <Route
-                path={'*'}
-                render={() => <Redirect to={`${baseUri}/login`} />}
-              />
+              <Route path={'*'} render={() => <Redirect to={`/login`} />} />
             </Switch>
           )}
         </>

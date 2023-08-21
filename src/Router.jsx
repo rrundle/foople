@@ -26,7 +26,7 @@ const Router = () => {
 
       <Route path={`${baseUri}/signup`} component={AccountRoutes} />
 
-      <Route path={`${baseUri}/login`} component={AccountRoutes} />
+      <Route path={`/login`} component={AccountRoutes} />
 
       <Route path={`${baseUri}/pages/forgetPwd`} component={ForgetPwd} />
 
