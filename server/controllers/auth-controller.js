@@ -37,6 +37,7 @@ const checkAuth = async (req, res) => {
 }
 
 const oauth = async (req, res) => {
+  console.log('oauth req.body: ', req.body)
   const { code, state } = req.body
   // For some reason I get an error with v2 on users.idenity (login) calls
   // and an error if I don't use v2 with the signup call
@@ -155,20 +156,20 @@ const createCompany = async ({
   teamId,
   authCollection,
 }) => {
-  stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
-  const stripCustomer = isPaymentEnabled
-    ? await stripe.customers.create({
-        email: userEmail,
-        description: `slack UserId: ${userSlackId}`,
-      })
-    : null
+  // stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
+  // const stripCustomer = isPaymentEnabled
+  //   ? await stripe.customers.create({
+  //       email: userEmail,
+  //       description: `slack UserId: ${userSlackId}`,
+  //     })
+  //   : null
 
   const trialPeriodStart = moment()
 
   const authData = {
     ...data,
     name: 'admin',
-    stripeId: isPaymentEnabled ? stripCustomer.id : null,
+    // stripeId: isPaymentEnabled ? stripCustomer.id : null,
     status: AccountStatus.Trial,
     trialPeriodStart: trialPeriodStart.toDate(),
   }
@@ -229,7 +230,7 @@ const sendSignupReminder = async (teamId, timeLeft) => {
         ? `:wave: Just a reminder that you only have ${timeLeft} days left in your Foople trial.`
         : `:wave: Your Foople trial is expiring today! Click here to keep it going for your team <https://foople.club/join> `
 
-      const message = await sendMessageToChannel({
+      await sendMessageToChannel({
         accessToken: company.access_token,
         message: messageText,
         channelId: user.user.id,
@@ -239,7 +240,7 @@ const sendSignupReminder = async (teamId, timeLeft) => {
       // send email reminder to sign up, theres still time!
       break
     case AccountStatus.Canceled:
-      // send email anyway we can win you back?
+      // send email anyway can we win you back?
       break
     default:
       // no email because we should send thank you when they pay.
