@@ -78,7 +78,7 @@ const slackLunchCommand = async (req, res) => {
 
   if (!Object.keys(lunchData).length) {
     data.text =
-      ':exclamation: You don\'t have enough lunch spots saved to create a poll. You can do so by typing "/lunch add"'
+      ':exclamation: You don\'t have enough lunch spots saved to create a poll. You can do so by typing "/foople add"'
   } else {
     data.text = 'Thanks!'
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })

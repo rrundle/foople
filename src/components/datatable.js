@@ -222,7 +222,7 @@ export class Datatable extends Component {
           defaultPageSize={pageSize}
           className={myClass}
           showPagination={pagination}
-          noDataText="No spots right now, head to Slack and add some with `/lunch add`"
+          noDataText="No spots right now, head to Slack and add some with `/foople add`"
         />
         <ToastContainer />
       </Fragment>
