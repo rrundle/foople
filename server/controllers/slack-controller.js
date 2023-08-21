@@ -23,11 +23,14 @@ const slackLunchCommand = async (req, res) => {
   } = req.body
 
   const responseText = text === 'help' ? 'Help is on the way!' : 'One sec...'
+  console.log('file: slack-controller.js:26 ~ responseText:', responseText)
 
   res.status(200).json({
     response_type: 'ephemeral',
     text: responseText,
   })
+
+  console.log("we're beyond the ephemeral response")
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
