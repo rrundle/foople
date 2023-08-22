@@ -12,6 +12,7 @@ const messageResponse = require('../slack/messageResponse')
 const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
+  console.log('req.body: ', req.body)
   const {
     channel_id: channelId,
     response_url: webhookUrl,
@@ -69,6 +70,7 @@ const slackLunchCommand = async (req, res) => {
   }
 
   const lunchData = await triggerSlackPoll(teamId, text)
+  console.log('file: slack-controller.js:72 ~ lunchData:', lunchData)
   let data = {
     bearerToken: process.env.SLACK_TOKEN,
     callback_id: 'poll_creator',
@@ -78,6 +80,7 @@ const slackLunchCommand = async (req, res) => {
     trigger_id: triggerId,
     user: userId,
   }
+  console.log('file: slack-controller.js:83 ~ data:', data)
 
   if (!Object.keys(lunchData).length) {
     data.text =

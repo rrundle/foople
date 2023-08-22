@@ -91,6 +91,7 @@ const shuffle = (array) => {
 
 const triggerSlackPoll = async (appId, text) => {
   const lunchList = await getSpecificLunchSpots({ appId, text })
+  console.log('file: helpers.js:94 ~ lunchList:', lunchList)
   if (!lunchList.length) return {}
   const url1 = await tiny(lunchList[0].url)
   const url2 = await tiny(lunchList[1].url)
