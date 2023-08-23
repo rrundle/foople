@@ -35,6 +35,7 @@ const slackLunchCommand = async (req, res) => {
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
+  console.log('file: slack-controller.js:38 ~ user:', user)
 
   if (company.status === AccountStatus.TrialExpired) {
     let message =
@@ -91,7 +92,7 @@ const slackLunchCommand = async (req, res) => {
   }
   try {
     const response = await fetch(
-      webhookUrl,
+      user.incoming_webhook.url,
       options({ body: JSON.stringify(data) }),
     )
     console.log('file: slack-controller.js:94 ~ response:', response)
