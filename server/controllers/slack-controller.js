@@ -90,7 +90,11 @@ const slackLunchCommand = async (req, res) => {
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
-    fetch(webhookUrl, options({ body: JSON.stringify(data) }))
+    const response = await fetch(
+      webhookUrl,
+      options({ body: JSON.stringify(data) }),
+    )
+    console.log('file: slack-controller.js:94 ~ response:', response)
   } catch (err) {
     console.error('error from creating poll: ', err)
   }
