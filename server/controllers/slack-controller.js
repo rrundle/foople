@@ -35,6 +35,7 @@ const slackLunchCommand = async (req, res) => {
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
+  console.log('file: slack-controller.js:38 ~ company:', company)
   console.log('file: slack-controller.js:38 ~ user:', user)
 
   if (company.status === AccountStatus.TrialExpired) {
@@ -91,6 +92,9 @@ const slackLunchCommand = async (req, res) => {
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
+    const collection = await mongoClient(teamId, 'auth')
+    const user = await collection.findOne()
+    console.log('file: slack-controller.js:97 ~ user after db fetch:', user)
     const response = await fetch(
       user.incoming_webhook.url,
       options({ body: JSON.stringify(data) }),
