@@ -1,5 +1,7 @@
 const fetch = require('node-fetch')
-const { mongoClient, options } = require('../database')
+const { mongoClient } = require('../database')
+const { options } = require('./helpers')
+console.log('file: searchSpots.js:3 ~ options:', options)
 
 require('dotenv').config()
 
@@ -40,6 +42,7 @@ const launchSearchSpots = async ({ teamId, triggerId, token }) => {
       options({ data: requestData }),
     )
     const body = await response.json()
+    console.log('file: searchSpots.js:44 ~ body:', body)
     return body
   } catch (err) {
     return err
