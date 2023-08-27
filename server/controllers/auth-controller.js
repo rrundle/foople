@@ -70,6 +70,7 @@ const oauth = async (req, res) => {
       team: { id: teamId } = {},
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
+    console.log('file: auth-controller.js:71 ~ teamId:', teamId)
 
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')

@@ -63,6 +63,7 @@ const getSpecificLunchSpots = ({ appId, text: type }) => {
 }
 
 const options = ({ data = {} }) => {
+  console.log('file: helpers.js:66 ~ data:', data)
   const { bearerToken, ...requestData } = data
   return {
     method: 'POST',

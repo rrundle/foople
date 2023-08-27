@@ -8,7 +8,7 @@ require('dotenv').config()
 const dialog = {
   dialog: {
     callback_id: 'search_spot',
-    title: 'Search for a lunch spot',
+    title: 'Search for a food spot',
     submit_label: 'Find',
     elements: [
       {
@@ -30,8 +30,9 @@ const dialog = {
 const launchSearchSpots = async ({ teamId, triggerId, token }) => {
   const userCollection = await mongoClient(teamId, 'auth')
   const data = await userCollection.findOne()
+  console.log('file: searchSpots.js:33 ~ data:', data)
   const requestData = {
-    bearerToken: data.access_token,
+    bearerToken: data.authed_user.access_token,
     ...dialog,
     token: token,
     trigger_id: triggerId,

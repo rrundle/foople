@@ -1,8 +1,8 @@
 const fetch = require('node-fetch')
 
-const { options, triggerSlackPoll } = require('../slack/helpers')
 const { mongoClient } = require('../database')
 const { AccountStatus } = require('../constants')
+const { options, triggerSlackPoll } = require('../slack/helpers')
 const launchSearchSpots = require('../slack/searchSpots')
 const searchYelp = require('../slack/searchYelp')
 const votingBlock = require('../slack/votingBlock')
@@ -12,7 +12,6 @@ const messageResponse = require('../slack/messageResponse')
 const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
-  console.log('req.body: ', req.body)
   const {
     channel_id: channelId,
     response_url: webhookUrl,
@@ -24,19 +23,14 @@ const slackLunchCommand = async (req, res) => {
   } = req.body
 
   const responseText = text === 'help' ? 'Help is on the way!' : 'One sec...'
-  console.log('file: slack-controller.js:26 ~ responseText:', responseText)
 
   res.status(200).json({
     response_type: 'ephemeral',
     text: responseText,
   })
 
-  console.log("we're beyond the ephemeral response")
-
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
-  console.log('file: slack-controller.js:38 ~ company:', company)
-  console.log('file: slack-controller.js:38 ~ user:', user)
 
   if (company.status === AccountStatus.TrialExpired) {
     let message =
@@ -72,7 +66,6 @@ const slackLunchCommand = async (req, res) => {
   }
 
   const lunchData = await triggerSlackPoll(teamId, text)
-  console.log('file: slack-controller.js:72 ~ lunchData:', lunchData)
   let data = {
     bearerToken: process.env.SLACK_TOKEN,
     callback_id: 'poll_creator',
@@ -82,7 +75,6 @@ const slackLunchCommand = async (req, res) => {
     trigger_id: triggerId,
     user: userId,
   }
-  console.log('file: slack-controller.js:83 ~ data:', data)
 
   if (!Object.keys(lunchData).length) {
     data.text =
@@ -92,14 +84,10 @@ const slackLunchCommand = async (req, res) => {
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
-    const collection = await mongoClient(teamId, 'auth')
-    const user = await collection.findOne()
-    console.log('file: slack-controller.js:97 ~ user after db fetch:', user)
-    const response = await fetch(
-      user.incoming_webhook.url,
-      options({ body: JSON.stringify(data) }),
-    )
-    console.log('file: slack-controller.js:94 ~ response:', response)
+    await fetch(webhookUrl, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
   } catch (err) {
     console.error('error from creating poll: ', err)
   }
@@ -146,7 +134,7 @@ const slackInteractiveCommand = async (req, res) => {
           { upsert: true },
         )
         // send back message saying successful, failure, or already added
-        const options = {
+        const interactiveOptions = {
           method: 'POST',
           body: JSON.stringify({
             channel: request.channel.id,
@@ -163,7 +151,7 @@ const slackInteractiveCommand = async (req, res) => {
           },
         }
         try {
-          await fetch(request.response_url, options)
+          await fetch(request.response_url, interactiveOptions)
         } catch (err) {
           console.error('err: ', err)
         }
@@ -190,7 +178,12 @@ const slackInteractiveCommand = async (req, res) => {
 
           await fetch(
             request.response_url,
-            options({ body: JSON.stringify(data) }),
+            options({
+              data: {
+                body: JSON.stringify(data),
+                bearerToken: process.env.SLACK_TOKEN,
+              },
+            }),
           )
         } catch (err) {
           console.error('err: ', err)
