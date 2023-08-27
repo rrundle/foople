@@ -8,7 +8,6 @@ const searchYelp = require('../slack/searchYelp')
 const votingBlock = require('../slack/votingBlock')
 const buildInteractiveMessage = require('../slack/buildInteractiveMessage')
 const buildHelpBlock = require('../slack/buildHelpBlock')
-const messageResponse = require('../slack/messageResponse')
 const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
@@ -22,12 +21,7 @@ const slackLunchCommand = async (req, res) => {
     user_id: userId,
   } = req.body
 
-  const responseText = text === 'help' ? 'Help is on the way!' : 'One sec...'
-
-  res.status(200).json({
-    response_type: 'ephemeral',
-    text: responseText,
-  })
+  res.status(200)
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()

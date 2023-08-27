@@ -32,7 +32,7 @@ const launchSearchSpots = async ({ teamId, triggerId, token }) => {
   const data = await userCollection.findOne()
   console.log('file: searchSpots.js:33 ~ data:', data)
   const requestData = {
-    bearerToken: data.authed_user.access_token,
+    bearerToken: process.env.SLACK_BOT_TOKEN,
     ...dialog,
     token: token,
     trigger_id: triggerId,
