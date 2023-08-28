@@ -8,8 +8,6 @@ import Cookies from 'js-cookie'
 
 import { SET_AUTH, ADD_USER, REQUEST_LOGOUT } from '../../constants/actionTypes'
 
-import { baseUri } from '../../config'
-
 const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
   const [profile, setProfile] = useState('')
   const isPaymentEnabled = process.env.PAYMENT_FEATURE_ENABLED

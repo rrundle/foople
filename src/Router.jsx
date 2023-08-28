@@ -11,11 +11,7 @@ import ResetPwd from './pages/resetPwd'
 // Auth
 import SlackAuth from './auth/slackAuth'
 
-import { baseUri } from './config'
-
 const Router = () => {
-  console.log('in the router!: ', baseUri)
-  debugger
   return (
     <Switch>
       <Route exact path={`/`} component={AccountRoutes} />

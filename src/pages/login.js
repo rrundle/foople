@@ -2,8 +2,6 @@ import React from 'react'
 import logo from '../assets/images/lunch-poll-logo.svg'
 import { withRouter } from 'react-router'
 
-import { baseUri } from '../config'
-
 const Login = ({ history }) => {
   const loginAuth = () => {
     history.push(`/app/dashboard/default`)

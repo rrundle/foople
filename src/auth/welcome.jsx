@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import Cookies from 'js-cookie'
 import { Redirect } from 'react-router-dom'
 
-import { baseUri } from '../config'
 import Button from '../components/button'
 import ButtonSecondary from '../components/button-secondary'
 import SvgSpinner from '../components/svg-spinner'

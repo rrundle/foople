@@ -1,4 +1,3 @@
-import { baseUri } from '../config'
 import { SET_USERS_SPOTS } from '../constants/actionTypes'
 
 export const fetchSpots = () => async (dispatch, getState) => {

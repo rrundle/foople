@@ -1,7 +1,6 @@
 import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
-import { baseUri } from '../config'
 
 const initializeAuth = (history, location) => async (dispatch, getState) => {
   const state = getState()

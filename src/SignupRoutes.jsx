@@ -5,8 +5,6 @@ import Cookies from 'js-cookie'
 import './index.scss'
 import SvgSpinner from './components/svg-spinner'
 
-import { baseUri } from './config'
-
 // Signup Components
 import Signup from './auth/signup'
 import Welcome from './auth/welcome'

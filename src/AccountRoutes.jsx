@@ -8,7 +8,6 @@ import './index.scss'
 import App from './components/app'
 import initializeAuth from './actions/initializeAuth'
 import { cookieExpiration } from './config'
-import { baseUri } from './config'
 
 // Import custom Components
 import Dashboard from './components/dashboard'
@@ -35,7 +34,6 @@ const AccountRoutes = ({
   const location = useLocation()
   const [loggedIn, setLoggedInState] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
-  debugger
 
   useEffect(() => {
     checkAuth()

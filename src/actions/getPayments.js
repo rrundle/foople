@@ -1,5 +1,3 @@
-import { baseUri } from '../config'
-
 const getPayments = () => async (dispatch, getState) => {
   const {
     authData: { stripeId },

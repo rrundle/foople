@@ -1,5 +1,3 @@
-import { baseUri } from '../config'
-
 const updateSubscription = (paymentInfo) => async (dispatch, getState) => {
   const {
     authData: { teamId, stripeId },
