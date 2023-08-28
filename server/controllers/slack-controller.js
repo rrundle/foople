@@ -112,7 +112,6 @@ const slackInteractiveCommand = async (req, res) => {
     }
     if (type === 'block_actions') {
       res.sendStatus(200)
-      console.log('file: slack-controller.js:116 ~ request:', request)
       const [submission] = request.actions
       const {
         team: { id: teamId } = {},
@@ -125,14 +124,12 @@ const slackInteractiveCommand = async (req, res) => {
         const spotsCollection = await mongoClient(teamId, 'spots')
         // Needed to check if spot already exists!! Bug Ticket
         const matches = await spotsCollection.find({}).toArray()
-        console.log('file: slack-controller.js:125 ~ matches:', matches)
         // insert in the database if it doesn't already exist
         const data = await spotsCollection.updateOne(
           selectedSpot,
           { $set: { addedBy: userName } },
           { upsert: true },
         )
-        console.log('file: slack-controller.js:133 ~ data:', data)
         // send back message saying successful, failure, or already added
         const interactiveOptions = {
           method: 'POST',
