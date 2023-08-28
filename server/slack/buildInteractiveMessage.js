@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-const { tiny } = require('tiny-shortener')
+const tiny = require('turl')
 
 const createMessage = async (sectionData) => {
   const messageArray = [
@@ -21,7 +21,7 @@ const createMessage = async (sectionData) => {
       name,
       url,
     } = sectionData[i]
-    const tinyUrl = await tiny(url)
+    const tinyUrl = await tiny.shorten(url)
     messageArray.push({
       type: 'section',
       text: {
@@ -67,7 +67,7 @@ const buildInteractiveMessage = (body, request) => {
         ...message,
       }),
       headers: {
-        Authorization: `Bearer ${process.env.SLACK_TOKEN}`,
+        Authorization: `Bearer ${process.env.SLACK_}`,
         'Content-Type': 'application/json',
       },
     }

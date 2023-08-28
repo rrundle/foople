@@ -33,7 +33,6 @@ const AccountRoutes = ({
   logoutRequested,
 }) => {
   const location = useLocation()
-  console.log('file: AccountRoutes.jsx:36 ~ location:', location)
   const [loggedIn, setLoggedInState] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   debugger
@@ -76,8 +75,6 @@ const AccountRoutes = ({
     setLoggedInState(true)
     setCheckingAuth(false)
   }
-
-  console.log('file: AccountRoutes.jsx:38 ~ loggedIn:', loggedIn)
 
   return (
     <>

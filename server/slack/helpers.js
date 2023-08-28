@@ -63,13 +63,13 @@ const getSpecificLunchSpots = ({ appId, text: type }) => {
 }
 
 const options = ({ data = {} }) => {
-  console.log('file: helpers.js:66 ~ data:', data)
   const { bearerToken, ...requestData } = data
   return {
     method: 'POST',
     body: JSON.stringify(requestData),
     headers: {
       Authorization: `Bearer ${bearerToken}`,
+      'Content-Type': 'application/json',
     },
   }
 }
@@ -92,7 +92,6 @@ const shuffle = (array) => {
 
 const triggerSlackPoll = async (appId, text) => {
   const lunchList = await getSpecificLunchSpots({ appId, text })
-  console.log('file: helpers.js:94 ~ lunchList:', lunchList)
   if (!lunchList.length) return {}
   const url1 = await tiny(lunchList[0].url)
   const url2 = await tiny(lunchList[1].url)

@@ -52,7 +52,7 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "stripe": "^8.56.0",
-    "tiny-shortener": "^2.2.3",
+    "turl": "^1.1.2",
     "uuid": "^7.0.2"
   },
   "devDependencies": {

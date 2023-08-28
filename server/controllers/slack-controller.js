@@ -52,7 +52,7 @@ const slackLunchCommand = async (req, res) => {
   }
 
   if (text === 'add') {
-    return launchSearchSpots({ teamId, triggerId, token })
+    return launchSearchSpots(triggerId)
   }
 
   if (text === 'help') {

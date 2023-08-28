@@ -11055,11 +11055,6 @@ tiny-invariant@^1.0.2:
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.1.0.tgz#634c5f8efdc27714b7f386c35e6760991d230875"
   integrity sha512-ytxQvrb1cPc9WBEI/HSeYYoGD0kWnGEOR8RY6KomWLBVhqz0RgTwVO9dLrGz7dC+nN9llyI7OKAgRq8Vq4ZBSw==
 
-tiny-shortener@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/tiny-shortener/-/tiny-shortener-2.2.3.tgz#fba22a812e0ab95e9edd6e027b0a1d6d8bf7e561"
-  integrity sha512-QEuFbPx+yrn33py7FoVktNRp0ode7n8Fxs6EvFK5oQI2lY575yb42NfwdeuiPO1LWgLCJIBqamH/I3uWKVzIAg==
-
 tiny-warning@^1.0.0, tiny-warning@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tiny-warning/-/tiny-warning-1.0.3.tgz#94a30db453df4c643d0fd566060d60a875d84754"
@@ -11191,6 +11186,11 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
+
+turl@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/turl/-/turl-1.1.2.tgz#f76b452a9833b5260964e69c5a179c2d32534b1d"
+  integrity sha512-Du3K3/ivcj0oqh5Arb5y4jqjW+fMaZyPLO7vkL4kgbdF+TS6Jjh43y+6eFLbpUULeJdA6kjkR0AAtyG1EnQ0aA==
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

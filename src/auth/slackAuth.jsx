@@ -6,7 +6,7 @@ import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { toast } from 'react-toastify'
 
-import { baseUri, cookieExpiration } from '../config'
+import { cookieExpiration } from '../config'
 import SvgSpinner from '../components/svg-spinner'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
 
@@ -17,10 +17,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
 
   useEffect(() => {
     const authUser = async (parsed) => {
-      console.log('file: slackAuth.jsx:20 ~ parsed:', parsed)
       const { code, error, state } = parsed
-      console.log('file: slackAuth.jsx:21 ~ state:', state)
-      console.log('file: slackAuth.jsx:21 ~ code:', code)
       if (error) {
         // TODO user likely declined the permissions
         // delete user from db
@@ -28,7 +25,6 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
       // invalid query params
       if (!code && !state) {
-        console.log('routing to /signup/new')
         return setRedirect({
           status: true,
           to: `/signup/new`,
@@ -47,7 +43,6 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
 
       try {
-        console.log('hitting oauth')
         const response = await fetch(`/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
@@ -104,26 +99,22 @@ const SlackAuth = ({ addUser, setAuth }) => {
     }
 
     const query = window.location.search.substring(1)
-    console.log('file: slackAuth.jsx:106 ~ query:', query)
     const parsed = qs.parse(query)
-    console.log('file: slackAuth.jsx:108 ~ parsed:', parsed)
     if (parsed.error) {
       // redirect to signup page
-      console.log('redirecting to signup page')
-      // setWorking(false)
-      // return setRedirect({
-      //   status: true,
-      //   to: `/signup/new`,
-      // })
+      setWorking(false)
+      return setRedirect({
+        status: true,
+        to: `/signup/new`,
+      })
     }
     if (Object.keys(parsed).length) {
       authUser(parsed)
     } else {
-      console.log('redirecting to signup page 2')
-      // setRedirect({
-      //   status: true,
-      //   to: `/signup/new`,
-      // })
+      setRedirect({
+        status: true,
+        to: `/signup/new`,
+      })
     }
   }, [addUser, location, setAuth])
 

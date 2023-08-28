@@ -37,7 +37,6 @@ const checkAuth = async (req, res) => {
 }
 
 const oauth = async (req, res) => {
-  console.log('oauth req.body: ', req.body)
   const { code, state } = req.body
   // For some reason I get an error with v2 on users.idenity (login) calls
   // and an error if I don't use v2 with the signup call
@@ -70,7 +69,6 @@ const oauth = async (req, res) => {
       team: { id: teamId } = {},
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
-    console.log('file: auth-controller.js:71 ~ teamId:', teamId)
 
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')

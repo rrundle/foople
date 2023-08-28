@@ -1,7 +1,6 @@
 const fetch = require('node-fetch')
 const { mongoClient } = require('../database')
 const { options } = require('./helpers')
-console.log('file: searchSpots.js:3 ~ options:', options)
 
 require('dotenv').config()
 
@@ -27,14 +26,11 @@ const dialog = {
   },
 }
 
-const launchSearchSpots = async ({ teamId, triggerId, token }) => {
-  const userCollection = await mongoClient(teamId, 'auth')
-  const data = await userCollection.findOne()
-  console.log('file: searchSpots.js:33 ~ data:', data)
+const launchSearchSpots = async (triggerId) => {
   const requestData = {
-    bearerToken: process.env.SLACK_BOT_TOKEN,
+    bearerToken: process.env.SLACK_OAUTH_TOKEN,
+    token: process.env.SLACK_OAUTH_TOKEN,
     ...dialog,
-    token: token,
     trigger_id: triggerId,
   }
   try {
@@ -43,7 +39,6 @@ const launchSearchSpots = async ({ teamId, triggerId, token }) => {
       options({ data: requestData }),
     )
     const body = await response.json()
-    console.log('file: searchSpots.js:44 ~ body:', body)
     return body
   } catch (err) {
     return err
