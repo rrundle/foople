@@ -83,13 +83,27 @@ app.get('/payment/get-payments', getPaymentMethods)
 /* CLEAR THE DATABASE */
 // WARNING proceed with caution
 // TODO Remove this when launching app
-app.post('/clear', async (req, res) => {
+app.post('/clear/spots', async (req, res) => {
   const { teamId, password } = req.body
   if (password !== process.env.MONGO_PASSWORD) {
     res.sendStatus(404)
   } else {
     const spotsCollection = await mongoClient(teamId, 'spots')
     const spots = await spotsCollection.deleteMany({})
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'DELETE,GET,PATCH,POST,PUT',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    })
+    res.status('200').send({ spots })
+  }
+})
+
+app.post('/clear/user', async (req, res) => {
+  const { teamId, password } = req.body
+  if (password !== process.env.MONGO_PASSWORD) {
+    res.sendStatus(404)
+  } else {
     const userCollection = await mongoClient(teamId, 'auth')
     const user = await userCollection.deleteMany({})
     res.set({
@@ -97,7 +111,7 @@ app.post('/clear', async (req, res) => {
       'Access-Control-Allow-Methods': 'DELETE,GET,PATCH,POST,PUT',
       'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     })
-    res.status('200').send({ user, spots })
+    res.status('200').send({ user })
   }
 })
 

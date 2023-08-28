@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import man from '../../assets/images/dashboard/user.png'
-import { CreditCard, DollarSign, Settings, LogOut } from 'react-feather'
+import user from '../../assets/images/dashboard/default_avatar.jpg'
+import { CreditCard, DollarSign, LogOut } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router'
 import Cookies from 'js-cookie'
@@ -14,7 +14,7 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
   const { avatarSmall } = authData
 
   useEffect(() => {
-    setProfile(avatarSmall || man)
+    setProfile(avatarSmall || user)
   }, [])
 
   const logOut = () => {

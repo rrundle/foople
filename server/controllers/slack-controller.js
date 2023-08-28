@@ -50,7 +50,7 @@ const slackLunchCommand = async (req, res) => {
       user: user.user_id,
     })
   }
-
+  console.log('about to lunch search')
   if (text === 'add') {
     return launchSearchSpots(triggerId)
   }
@@ -112,21 +112,27 @@ const slackInteractiveCommand = async (req, res) => {
     }
     if (type === 'block_actions') {
       res.sendStatus(200)
+      console.log('file: slack-controller.js:116 ~ request:', request)
       const [submission] = request.actions
-      const { team: { id: teamId } = {} } = request
+      const {
+        team: { id: teamId } = {},
+        user: { name: userName },
+      } = request
       // check if its a spot addition request
       if (submission.text.text === 'Choose') {
         // spot addition request
         const selectedSpot = JSON.parse(submission.value)
         const spotsCollection = await mongoClient(teamId, 'spots')
-        // check account status
+        // Needed to check if spot already exists!! Bug Ticket
         const matches = await spotsCollection.find({}).toArray()
+        console.log('file: slack-controller.js:125 ~ matches:', matches)
         // insert in the database if it doesn't already exist
         const data = await spotsCollection.updateOne(
           selectedSpot,
-          { $set: selectedSpot },
+          { $set: { addedBy: userName } },
           { upsert: true },
         )
+        console.log('file: slack-controller.js:133 ~ data:', data)
         // send back message saying successful, failure, or already added
         const interactiveOptions = {
           method: 'POST',
