@@ -32,14 +32,12 @@ const launchSearchSpots = async (triggerId) => {
       ...dialog,
       trigger_id: triggerId,
     }
-    console.log('file: searchSpots.js:35 ~ requestData:', requestData)
 
     const response = await fetch(
       'https://slack.com/api/dialog.open',
       options({ data: requestData }),
     )
     const body = await response.json()
-    console.log('file: searchSpots.js:42 ~ body:', body)
     return body
   } catch (err) {
     return err
