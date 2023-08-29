@@ -50,7 +50,6 @@ const slackLunchCommand = async (req, res) => {
       user: user.user_id,
     })
   }
-  console.log('about to lunch search')
   if (text === 'add') {
     return launchSearchSpots(triggerId)
   }
