@@ -2,7 +2,7 @@ const fetch = require('node-fetch')
 
 const { mongoClient } = require('../database')
 const { AccountStatus } = require('../constants')
-const { options, triggerSlackPoll } = require('../slack/helpers')
+const { triggerSlackPoll } = require('../slack/helpers')
 const launchSearchSpots = require('../slack/searchSpots')
 const searchYelp = require('../slack/searchYelp')
 const votingBlock = require('../slack/votingBlock')
@@ -170,15 +170,10 @@ const slackInteractiveCommand = async (req, res) => {
             vote,
           })
 
-          await fetch(
-            request.response_url,
-            options({
-              data: {
-                body: JSON.stringify(data),
-                bearerToken: process.env.SLACK_TOKEN,
-              },
-            }),
-          )
+          await fetch(request.response_url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+          })
         } catch (err) {
           console.error('err: ', err)
         }

@@ -1,4 +1,4 @@
-const { tiny } = require('turl')
+const tiny = require('turl')
 const { mongoClient } = require('../database')
 
 const getRandomInt = (min, max) => {
