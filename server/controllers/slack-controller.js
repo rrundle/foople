@@ -123,12 +123,17 @@ const slackInteractiveCommand = async (req, res) => {
         const spotsCollection = await mongoClient(teamId, 'spots')
         // Needed to check if spot already exists!! Bug Ticket
         const matches = await spotsCollection.find({}).toArray()
-        // insert in the database if it doesn't already exist
-        const data = await spotsCollection.updateOne(
-          selectedSpot,
-          { $set: { addedBy: userName } },
-          { upsert: true },
-        )
+
+        const alreadyAdded = matches.some((spot) => spot.id === selectedSpot.id)
+
+        if (!alreadyAdded) {
+          // insert in the database if it doesn't already exist
+          await spotsCollection.updateOne(
+            selectedSpot,
+            { $set: { addedBy: userName } },
+            { upsert: true },
+          )
+        }
         // send back message saying successful, failure, or already added
         const interactiveOptions = {
           method: 'POST',
@@ -137,7 +142,7 @@ const slackInteractiveCommand = async (req, res) => {
             token: request.token,
             user: request.user.id,
             type: 'section',
-            text: data.upsertedCount
+            text: !alreadyAdded
               ? `:tada: ${selectedSpot.name} has been added to the list!`
               : ':dancer: Great minds think alike! This spot has already been added. Try another place.',
           }),
