@@ -50,7 +50,6 @@ const slackLunchCommand = async (req, res) => {
       user: user.user_id,
     })
   }
-
   if (text === 'add') {
     return launchSearchSpots(triggerId)
   }
@@ -113,18 +112,21 @@ const slackInteractiveCommand = async (req, res) => {
     if (type === 'block_actions') {
       res.sendStatus(200)
       const [submission] = request.actions
-      const { team: { id: teamId } = {} } = request
+      const {
+        team: { id: teamId } = {},
+        user: { name: userName },
+      } = request
       // check if its a spot addition request
       if (submission.text.text === 'Choose') {
         // spot addition request
         const selectedSpot = JSON.parse(submission.value)
         const spotsCollection = await mongoClient(teamId, 'spots')
-        // check account status
+        // Needed to check if spot already exists!! Bug Ticket
         const matches = await spotsCollection.find({}).toArray()
         // insert in the database if it doesn't already exist
         const data = await spotsCollection.updateOne(
           selectedSpot,
-          { $set: selectedSpot },
+          { $set: { addedBy: userName } },
           { upsert: true },
         )
         // send back message saying successful, failure, or already added
