@@ -1,8 +1,6 @@
 const fetch = require('node-fetch')
-const { mongoClient } = require('../database')
+const { serverConfig } = require('../config')
 const { options } = require('./helpers')
-
-require('dotenv').config()
 
 const dialog = {
   dialog: {
@@ -27,13 +25,14 @@ const dialog = {
 }
 
 const launchSearchSpots = async (triggerId) => {
-  const requestData = {
-    bearerToken: process.env.SLACK_OAUTH_TOKEN,
-    token: process.env.SLACK_OAUTH_TOKEN,
-    ...dialog,
-    trigger_id: triggerId,
-  }
   try {
+    const requestData = {
+      bearerToken: serverConfig.get('oauthToken'),
+      token: serverConfig.get('oauthToken'),
+      ...dialog,
+      trigger_id: triggerId,
+    }
+
     const response = await fetch(
       'https://slack.com/api/dialog.open',
       options({ data: requestData }),
