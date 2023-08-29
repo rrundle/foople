@@ -95,7 +95,6 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
         })
       }
     }
-    console.log('file: votingBlock.js:96 ~ existingBlocks:', existingBlocks)
     return existingBlocks
   }
 

@@ -40,7 +40,6 @@ const launchSearchSpots = async (triggerId) => {
     const body = await response.json()
     return body
   } catch (err) {
-    console.log('file: searchSpots.js:65 ~ err:', err)
     return err
   }
 }
