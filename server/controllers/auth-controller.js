@@ -81,7 +81,6 @@ const oauth = async (req, res) => {
 
       return res.status('200').send({
         message: 'signup needed',
-        user: response,
       })
     }
 

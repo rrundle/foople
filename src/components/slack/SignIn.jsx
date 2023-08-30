@@ -3,7 +3,7 @@ import React from 'react'
 const SlackSignIn = () => {
   return (
     <a
-      href={`https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email&client_id=1042026065250.2926712584193&state=login`}
+      href={`https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email&client_id=${process.env.REACT_APP_CLIENT_ID}&state=login`}
     >
       <img
         alt="Sign in with Slack"

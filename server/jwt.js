@@ -37,7 +37,7 @@ const generateJWT = (userData) => {
     uid,
   }
 
-  return jwt.sign(payload, 'ThisIsMySecretKey!', {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: parseInt(expirationDate.getTime() / 1000, 10),
   })
 }
