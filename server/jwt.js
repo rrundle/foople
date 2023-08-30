@@ -15,7 +15,7 @@ const generateJWT = (userData) => {
       image_72: avatarSmall,
       image_512: avatarLarge,
     } = {},
-    stripeId,
+    stripeId = '',
     team: { id: teamId } = {},
     status,
     subscriptionId,

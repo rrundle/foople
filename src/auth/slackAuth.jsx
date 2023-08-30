@@ -46,6 +46,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         const response = await fetch(`/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
+
         if (response.status === 403) throw new Error('Stripe Error')
         if (
           state === 'login.signup' ||
@@ -77,9 +78,11 @@ const SlackAuth = ({ addUser, setAuth }) => {
           if (state === 'login') {
             toast.success('Welcome back!')
           } else if (state === 'signup') {
-            toast.success('Already signed up, redirecting you to the dashboard')
+            toast.success("You're all set!")
           }
         } else if (body.message === 'signup needed') {
+          // needs to signup, save user data in state and get company authorization
+          // we need to save user data in the DB, with redirects the store state is not persisting
           window.location = `https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`
         } else if (body.message === 'existing user' && body.token) {
           // initial signup, get user permissions

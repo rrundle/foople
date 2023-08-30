@@ -38,7 +38,7 @@ const checkAuth = async (req, res) => {
 
 const oauth = async (req, res) => {
   const { code, state } = req.body
-  // For some reason I get an error with v2 on users.idenity (login) calls
+  // For some reason I get an error with v2 on users.identity (login) calls
   // and an error if I don't use v2 with the signup call
   // TODO check on API updates in case this might break, but should be stable
   // if we don't update the version
@@ -75,7 +75,10 @@ const oauth = async (req, res) => {
     const [company, adminUser] = await authCollection.find({}).toArray()
 
     if (state === 'login' && !company) {
-      // no user, we need user permissions
+      // no user, we have user data but no company data
+      // save user data and get company data
+      await createAdmin(response, authCollection)
+
       return res.status('200').send({
         message: 'signup needed',
       })
@@ -98,11 +101,37 @@ const oauth = async (req, res) => {
       }
     }
 
-    if ((company || {})._id) {
+    if ((company || {})._id && state !== 'signup') {
       // Company already exists
       const authedUser = await createToken(adminUser || company)
       return res.status('200').send({
         message: !adminUser ? 'existing user' : 'authed existing user',
+        token: authedUser,
+      })
+    }
+
+    if ((company || {})._id && state === 'signup') {
+      // user exists but company doesn't
+      const newUser = await createCompany({
+        data: response,
+        userEmail: company.user.email,
+        userSlackId: company.user.id,
+        teamId: company.team.id,
+        authCollection,
+      })
+
+      const {
+        team: { id: team_id },
+        incoming_webhook: { channel_id },
+      } = newUser
+
+      await sendWelcome(team_id, channel_id)
+
+      // Auth user
+      const authedUser = await createToken(company)
+
+      return res.status('200').send({
+        message: 'authed existing user',
         token: authedUser,
       })
     }
