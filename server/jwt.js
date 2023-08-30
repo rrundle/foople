@@ -15,7 +15,7 @@ const generateJWT = (userData) => {
       image_72: avatarSmall,
       image_512: avatarLarge,
     } = {},
-    stripeId,
+    stripeId = '',
     team: { id: teamId } = {},
     status,
     subscriptionId,
@@ -37,7 +37,7 @@ const generateJWT = (userData) => {
     uid,
   }
 
-  return jwt.sign(payload, process.env.JWT_SECRET, {
+  return jwt.sign(payload, 'ThisIsMySecretKey!', {
     expiresIn: parseInt(expirationDate.getTime() / 1000, 10),
   })
 }

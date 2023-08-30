@@ -135,11 +135,7 @@ const AccountRoutes = ({
             <Switch>
               <Route path={`/login`} component={Signin} />
               <Route path={`/signup`} component={SignupRoutes} />
-              <Route
-                exact
-                path={'/' || 'https://foople.herokuapp.com'}
-                component={HomePage}
-              />
+              <Route exact path={'/'} component={HomePage} />
               <Route path={'*'} render={() => <Redirect to={`/login`} />} />
             </Switch>
           )}

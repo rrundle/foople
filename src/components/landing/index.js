@@ -10,7 +10,7 @@ const LandingPage = ({ children }) => {
         <div className="landing-page-body">
           <nav className="landing-page-nav">
             <a
-              href={`https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email&client_id=${process.env.REACT_APP_CLIENT_ID}&state=login`}
+              href={`https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email&client_id=1042026065250.2926712584193&state=login`}
             >
               Login
             </a>

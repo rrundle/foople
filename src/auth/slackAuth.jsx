@@ -10,7 +10,7 @@ import { cookieExpiration } from '../config'
 import SvgSpinner from '../components/svg-spinner'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
 
-const SlackAuth = ({ addUser, setAuth }) => {
+const SlackAuth = ({ addUser, setAuth, authData }) => {
   const [working, setWorking] = useState(true)
   const [redirect, setRedirect] = useState({ status: false, to: '' })
   const location = useLocation()
@@ -36,6 +36,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
         body: JSON.stringify({
           code,
           state,
+          authData,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -43,9 +44,10 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
 
       try {
-        const response = await fetch(`/oauth`, options)
+        const response = await fetch(`http://localhost:2999/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
+
         if (response.status === 403) throw new Error('Stripe Error')
         if (
           state === 'login.signup' ||
@@ -77,13 +79,15 @@ const SlackAuth = ({ addUser, setAuth }) => {
           if (state === 'login') {
             toast.success('Welcome back!')
           } else if (state === 'signup') {
-            toast.success('Already signed up, redirecting you to the dashboard')
+            toast.success("You're all set!")
           }
         } else if (body.message === 'signup needed') {
-          window.location = `https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`
+          // needs to signup, save user data in state and get company authorization
+          // we need to save user data in the DB, with redirects the store state is not persisting
+          window.location = `https://slack.com/oauth/v2/authorize?client_id=1042026065250.2926712584193&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`
         } else if (body.message === 'existing user' && body.token) {
           // initial signup, get user permissions
-          window.location = `https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email,&client_id=${process.env.REACT_APP_CLIENT_ID}&state=login.signup`
+          window.location = `https://slack.com/oauth/authorize?scope=identity.basic,identity.avatar,identity.email,&client_id=1042026065250.2926712584193&state=login.signup`
         } else {
           throw new Error('error ahoy')
         }
@@ -129,9 +133,13 @@ const SlackAuth = ({ addUser, setAuth }) => {
   )
 }
 
+const mapStateToProps = ({ authData = {} }) => ({
+  authData,
+})
+
 const mapDispatchToProps = (dispatch) => ({
   addUser: (value) => dispatch({ type: ADD_USER, value }),
   setAuth: (value) => dispatch({ type: SET_AUTH, value }),
 })
 
-export default connect(null, mapDispatchToProps)(SlackAuth)
+export default connect(mapStateToProps, mapDispatchToProps)(SlackAuth)
