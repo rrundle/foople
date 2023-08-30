@@ -12,8 +12,8 @@ import Welcome from './auth/welcome'
 // payment components
 
 const SignupRoutes = () => {
-  const [verifiedSignup, setVerifiedSignup] = useState(true) // TODO CHANGE!!!
-  const [checkingSignupStatus, setCheckingSignupStatus] = useState(false) // TODO CHANGE!!!
+  const [verifiedSignup, setVerifiedSignup] = useState(false)
+  const [checkingSignupStatus, setCheckingSignupStatus] = useState(true)
 
   useEffect(() => {
     checkSignupStatus()
@@ -46,7 +46,10 @@ const SignupRoutes = () => {
           />
         </>
       ) : (
-        <Redirect to={`/signup/new`} />
+        <>
+          <Route exact path={`/signup/new`} component={Signup} />
+          <Redirect to={`/signup/new`} />
+        </>
       )}
     </>
   )
