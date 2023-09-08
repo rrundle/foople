@@ -21,7 +21,7 @@ const slackLunchCommand = async (req, res) => {
     user_id: userId,
   } = req.body
 
-  res.status(200)
+  res.status(200).send()
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
