@@ -37,9 +37,11 @@ const launchSearchSpots = async (triggerId) => {
       'https://slack.com/api/dialog.open',
       options({ data: requestData }),
     )
+    console.log('file: searchSpots.js:41 ~ response:', response)
     const body = await response.json()
     return body
   } catch (err) {
+    console.log('file: searchSpots.js:45 ~ err:', err)
     return err
   }
 }

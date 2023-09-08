@@ -23,6 +23,8 @@ const slackLunchCommand = async (req, res) => {
 
   res.status(200).send()
 
+  console.log('passing the send')
+
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
 
@@ -51,6 +53,7 @@ const slackLunchCommand = async (req, res) => {
     })
   }
   if (text === 'add') {
+    console.log('in add!')
     return launchSearchSpots(triggerId)
   }
 
