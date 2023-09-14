@@ -9,7 +9,7 @@ require('dotenv').config()
 const startTokenRotation = async () => {
   setOauthToken()
   /**
-   * Refresh the access token every 11 hours
+   * Refresh the access token at 4am and 4pm
    */
   cron.schedule('0 4,16 * * *', async () => {
     setOauthToken()
