@@ -21,6 +21,8 @@ const LandingPage = ({ children }) => {
               <p className="landing-subtitle">The Food Poll</p>
               <p className="landing-description">
                 Create a randomized poll in Slack to decide where to get food.
+              </p>
+              <p className="landing-description">
                 The days of taking forever to decide where to eat are over.
               </p>
               <div className="slack-signup-wrapper">
