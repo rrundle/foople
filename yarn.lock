@@ -2597,9 +2597,9 @@ bser@2.1.1:
     node-int64 "^0.4.0"
 
 bson@^1.1.1:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.3.tgz#aa82cb91f9a453aaa060d6209d0675114a8154d3"
-  integrity sha512-TdiJxMVnodVS7r0BdL42y/pqC9cL2iKynVwA0Ho3qbsQYr428veL3l7BQyuqiw+Q5SqqoT0m4srSY/BlZ9AxXg==
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.6.tgz#fb819be9a60cd677e0853aee4ca712a785d6618a"
+  integrity sha512-EvVNVeGo4tHxwi8L6bPj3y3itEvStdwvvlojVxxbyYfoaxJ6keLgrTuKdyfEAszFK+H3olzBuafE0yoh0D1gdg==
 
 buffer-equal-constant-time@1.0.1:
   version "1.0.1"
@@ -7471,6 +7471,7 @@ minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
+
 
 mississippi@^3.0.0:
   version "3.0.0"
