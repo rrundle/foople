@@ -55,6 +55,7 @@
     "request": "^2.88.0",
     "stripe": "^8.56.0",
     "turl": "^1.1.2",
+    "twilio": "^4.19.0",
     "uuid": "^7.0.2"
   },
   "devDependencies": {

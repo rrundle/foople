@@ -1,6 +1,7 @@
 const fetch = require('node-fetch')
 const { serverConfig } = require('../config')
 const { options } = require('./helpers')
+const { sendTwilioMessage } = require('../../server/cronjobs/token-rotation')
 
 const dialog = {
   dialog: {
@@ -26,9 +27,12 @@ const dialog = {
 
 const launchSearchSpots = async (triggerId) => {
   try {
+    await sendTwilioMessage(
+      `about to launch dialog ~ oauthToken: ${serverConfig.get('oauthToken')}`,
+    )
     const requestData = {
       bearerToken: serverConfig.get('oauthToken'),
-      token: serverConfig.get('oauthToken'),
+      // token: serverConfig.get('oauthToken'),
       ...dialog,
       trigger_id: triggerId,
     }
@@ -40,6 +44,7 @@ const launchSearchSpots = async (triggerId) => {
     const body = await response.json()
     return body
   } catch (err) {
+    console.error('launchSearchSpots ~ err:', err)
     return err
   }
 }

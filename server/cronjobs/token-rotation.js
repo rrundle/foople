@@ -4,6 +4,11 @@ const fetch = require('node-fetch')
 
 const { serverConfig } = require('../config')
 
+const accountSid = process.env.TWILIO_ACCOUNT_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+
+// const client = require('twilio')(accountSid, authToken);
+
 require('dotenv').config()
 
 const startTokenRotation = async () => {
@@ -30,17 +35,43 @@ const setOauthToken = async () => {
   }
 
   try {
+    await sendTwilioMessage(
+      `Starting rotation, refresh_token now: ${serverConfig.get(
+        'refreshToken',
+      )}`,
+    )
     const refreshResponse = await fetch(
       'https://slack.com/api/oauth.v2.access',
       requestOptions,
     )
     const refreshResult = await refreshResponse.json()
+    console.log('file: token-rotation.js:44 ~ refreshResult:', refreshResult)
 
     serverConfig.set('refreshToken', refreshResult.refresh_token)
     serverConfig.set('oauthToken', refreshResult.access_token)
+
+    await sendTwilioMessage(
+      `Completed rotation, refresh_token now: ${refreshResult.refresh_token}, oauth_token now: ${refreshResult.oauth_token}`,
+    )
   } catch (e) {
     console.error('token rotation error:', e)
   }
 }
 
-module.exports = { startTokenRotation }
+const sendTwilioMessage = async (message = 'hello world') => {
+  // try {
+  //   const response = await client.messages
+  //   .create({
+  //     body: message,
+  //     to: '+16268402294', // Text your number
+  //     from: '+12345678901', // From a valid Twilio number
+  //   })
+  //   console.log('Twilio response', response.status);
+  //   return response.status
+  // } catch (e) {
+  //   console.log('Twilio no likey');
+  //   return 'Twilio no likey'
+  // }
+}
+
+module.exports = { startTokenRotation, sendTwilioMessage }
