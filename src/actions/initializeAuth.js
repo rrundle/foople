@@ -1,7 +1,6 @@
 import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
-import { baseUri } from '../config'
 
 const initializeAuth = (history, location) => async (dispatch, getState) => {
   const state = getState()
@@ -12,7 +11,6 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
     }
   }
   const authToken = Cookies.get('lunch-session')
-  console.log('authToken: ', authToken)
   if (!authToken) return { authed: false, message: 'no token to auth with' }
 
   const options = {
@@ -26,14 +24,14 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${baseUri}/check-auth`, options)
+    const response = await fetch(`/check-auth`, options)
     if (!response.ok) {
       Cookies.remove('lunch-session')
       dispatch({ type: SET_AUTH, value: false })
       if (location.pathname === '/') {
-        history.push(`${process.env.PUBLIC_URL}/`)
+        history.push('/')
       } else {
-        history.push(`${process.env.PUBLIC_URL}/login`)
+        history.push('/login')
       }
       throw new Error('Failed initializeAuth')
     }

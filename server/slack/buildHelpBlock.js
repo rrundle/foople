@@ -3,10 +3,6 @@ const { mongoClient } = require('../database')
 
 const buildHelpBlock = (body) => {
   return new Promise(async (resolve, reject) => {
-    console.log(
-      '🚀 ~ file: buildHelpBlock.js ~ line 5 ~ buildHelpBlock ~ body',
-      body.team_id,
-    )
     const message = {
       blocks: [
         {
@@ -23,7 +19,8 @@ const buildHelpBlock = (body) => {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: '_*/lunch*_  Creates a random poll of lunches to be voted on',
+            text:
+              '_*/foople*_  Creates a random poll of lunches to be voted on',
           },
         },
         {
@@ -31,7 +28,7 @@ const buildHelpBlock = (body) => {
           text: {
             type: 'mrkdwn',
             text:
-              '_*/lunch <type>*_  Creates a random poll with that type of food as a priority',
+              '_*/foople <type>*_  Creates a random poll with that type of food as a priority',
           },
         },
         {
@@ -39,7 +36,7 @@ const buildHelpBlock = (body) => {
           elements: [
             {
               type: 'mrkdwn',
-              text: 'i.e. _*/lunch noodles*_',
+              text: 'i.e. _*/foople noodles*_',
             },
           ],
         },
@@ -48,7 +45,7 @@ const buildHelpBlock = (body) => {
           text: {
             type: 'mrkdwn',
             text:
-              '_*/lunch add*_  Launches a dialog to search for and a new lunch spot to the list of options',
+              '_*/foople add*_  Launches a dialog to search for and a new lunch spot to the list of options',
           },
         },
       ],

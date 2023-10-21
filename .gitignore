@@ -1,5 +1,5 @@
-build
 coverage
+build
 dist
 doc
 lib-loadtest

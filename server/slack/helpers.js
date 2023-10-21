@@ -1,4 +1,4 @@
-const { tiny } = require('tiny-shortener')
+const tiny = require('turl')
 const { mongoClient } = require('../database')
 
 const getRandomInt = (min, max) => {
@@ -24,7 +24,6 @@ const getSpecificLunchSpots = ({ appId, text: type }) => {
   return new Promise(async (resolve) => {
     const spotsCollection = await mongoClient(appId, 'spots')
     const data = await spotsCollection.find().toArray()
-    console.log('data: ', data)
     // filter out the identifier entry
     const onlySpots = data.filter((entry) => entry.alias)
     // if less than 3 we dont have enough to make a poll, return an empty array
@@ -70,6 +69,7 @@ const options = ({ data = {} }) => {
     body: JSON.stringify(requestData),
     headers: {
       Authorization: `Bearer ${bearerToken}`,
+      'Content-Type': 'application/json',
     },
   }
 }
@@ -93,9 +93,9 @@ const shuffle = (array) => {
 const triggerSlackPoll = async (appId, text) => {
   const lunchList = await getSpecificLunchSpots({ appId, text })
   if (!lunchList.length) return {}
-  const url1 = await tiny(lunchList[0].url)
-  const url2 = await tiny(lunchList[1].url)
-  const url3 = await tiny(lunchList[2].url)
+  const url1 = await tiny.shorten(lunchList[0].url)
+  const url2 = await tiny.shorten(lunchList[1].url)
+  const url3 = await tiny.shorten(lunchList[2].url)
   return {
     spot1: {
       name: lunchList[0].name,

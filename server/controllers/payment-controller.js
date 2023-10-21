@@ -27,8 +27,6 @@ const createSubscription = async (req, res) => {
       },
     })
 
-    console.log('daysLeftInTrial: ', daysLeftInTrial(trialPeriodStart))
-
     // Create the subscription
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
@@ -56,7 +54,6 @@ const createSubscription = async (req, res) => {
 }
 
 const updateSubscription = async (req, res) => {
-  console.log('req.body: ', req.body)
   const { paymentMethodId = '', teamId = '', customerId = '' } = req.body
   try {
     // Create the subscription
@@ -71,13 +68,11 @@ const updateSubscription = async (req, res) => {
         default_payment_method: paymentMethodId,
       },
     })
-    console.log('its a sussess')
 
     const paymentMethods = await stripe.paymentMethods.list({
       customer: customerId,
       type: 'card',
     })
-    console.log('paymentMethods', paymentMethods)
 
     // Save the subscription info in the db, update to active
     const userCollection = await mongoClient(teamId, 'auth')
@@ -93,7 +88,6 @@ const updateSubscription = async (req, res) => {
 }
 
 const cancelSubscription = async (req, res) => {
-  console.log('req.body: ', req.body)
   const { teamId = '', subscriptionId = null } = req.body
   try {
     // Create the subscription
@@ -118,7 +112,6 @@ const cancelSubscription = async (req, res) => {
 }
 
 const getPaymentMethods = async (req, res) => {
-  console.log('req.body: ', req.body)
   const { customerId = '' } = req.body
 
   try {
@@ -126,10 +119,9 @@ const getPaymentMethods = async (req, res) => {
       customer: customerId,
       type: 'card',
     })
-    console.log('paymentMethods', paymentMethods)
     res.status('200').send(paymentMethods.data)
   } catch (err) {
-    console.log('err', err)
+    console.error('err', err)
   }
 }
 

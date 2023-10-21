@@ -40,12 +40,11 @@ const deleteUserSpots = async (req, res) => {
     const deletedSpots = []
     for (const spot of spots) {
       const result = await spotsCollection.deleteOne({ id: spot })
-      console.log('result: ', result)
       deletedSpots.push(result)
     }
     res.status(200).send(deletedSpots)
   } catch (err) {
-    console.log('err: ', err)
+    console.error('err: ', err)
   }
 }
 

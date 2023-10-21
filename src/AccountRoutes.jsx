@@ -32,8 +32,8 @@ const AccountRoutes = ({
   logoutRequested,
 }) => {
   const location = useLocation()
-  const [loggedIn, setLoggedInState] = useState(false) // TODO CHANGE!!
-  const [checkingAuth, setCheckingAuth] = useState(true) // TODO CHANGE!!
+  const [loggedIn, setLoggedInState] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
 
   useEffect(() => {
     checkAuth()
@@ -43,7 +43,6 @@ const AccountRoutes = ({
     if (auth && Object.keys(authData).length) {
       authUser()
     } else {
-      console.log('checking auth at logout')
       if (logoutRequested) {
         setLoggedInState(false)
       }
@@ -51,7 +50,6 @@ const AccountRoutes = ({
   }, [auth, authData])
 
   const checkAuth = async () => {
-    console.log('checkingAuth at login!')
     setCheckingAuth(true)
     // if user is already logged in
     if (auth && Object.keys(authData).length) {
@@ -59,7 +57,6 @@ const AccountRoutes = ({
       return setCheckingAuth(false)
     }
     const existingCookie = Cookies.get('lunch-session')
-    console.log('existingCookie', existingCookie)
     if (existingCookie) {
       // no auth in state but user has token, refresh auth
       return initializeAuth(history, location)
@@ -77,9 +74,6 @@ const AccountRoutes = ({
     setCheckingAuth(false)
   }
 
-  console.log('checkingAuth: ', checkingAuth)
-  console.log('loggedIn: ', loggedIn)
-
   return (
     <>
       {checkingAuth ? (
@@ -88,106 +82,61 @@ const AccountRoutes = ({
         </>
       ) : (
         <>
-          {true ? (
+          {loggedIn ? (
             <>
               <App>
                 <Switch>
                   {/* dashboard menu */}
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/app`}
-                    render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
-                    )}
+                    path={`/app`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
+                  <Route exact path={`/signup/welcome`} component={Welcome} />
+                  {/* <Route exact path={`/`} component={Default} /> */}
                   <Route
-                    exact
-                    path={`${process.env.PUBLIC_URL}/signup/welcome`}
-                    component={Welcome}
-                  />
-                  {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Default} /> */}
-                  <Route
-                    path={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                    path={`/app/dashboard/default`}
                     component={Dashboard}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/table/datatable`}
+                    path={`/app/table/datatable`}
                     component={DataTableComponent}
                   />
+                  <Route path={`/app/users/userEdit`} component={UserEdit} />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/app/users/userEdit`}
-                    component={UserEdit}
-                  />
-                  <Route
-                    path={`${process.env.PUBLIC_URL}/app/account/payment`}
+                    path={`/app/account/payment`}
                     component={BillingPage}
                   />
                   {/* Pricing */}
+                  <Route path={`/price/pricing`} component={Pricing} />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/price/pricing`}
-                    component={Pricing}
+                    exact
+                    path={`/login`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/login`}
-                    render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
-                    )}
+                    path={`/signup`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     exact
-                    path={`${process.env.PUBLIC_URL}/signup`}
-                    render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path={`${process.env.PUBLIC_URL}/`}
-                    render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
-                    )}
+                    path={`/`}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                   <Route
                     path={'*'}
-                    render={() => (
-                      <Redirect
-                        to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
-                      />
-                    )}
+                    render={() => <Redirect to={`/app/dashboard/default`} />}
                   />
                 </Switch>
               </App>
             </>
           ) : (
             <Switch>
-              <Route
-                path={`${process.env.PUBLIC_URL}/login`}
-                component={Signin}
-              />
-              <Route
-                path={`${process.env.PUBLIC_URL}/signup`}
-                component={SignupRoutes}
-              />
-              <Route
-                exact
-                path={`${process.env.PUBLIC_URL}/`}
-                component={HomePage}
-              />
-              <Route
-                path={'*'}
-                render={() => (
-                  <Redirect to={`${process.env.PUBLIC_URL}/login`} />
-                )}
-              />
+              <Route path={`/login`} component={Signin} />
+              <Route path={`/signup`} component={SignupRoutes} />
+              <Route exact path={'/'} component={HomePage} />
+              <Route path={'*'} render={() => <Redirect to={`/login`} />} />
             </Switch>
           )}
         </>

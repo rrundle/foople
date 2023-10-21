@@ -17,12 +17,12 @@ const Signup = () => (
                 <div className="authentication-box">
                   <div className="text-center">
                     <img src={logo} alt="" />
-                    <h3 className="signup-title">Lunch Poll</h3>
+                    <h3 className="signup-title">Foople</h3>
                   </div>
                   <div className="card mt-4 login-card">
                     <div className="card-body">
                       <a
-                        href={`https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write,users:read&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`}
+                        href={`https://slack.com/oauth/v2/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=commands,app_mentions:read,channels:history,channels:manage,chat:write,chat:write.public,im:history,im:write,incoming-webhook,mpim:write&user_scope=chat:write,identify,im:write,channels:write,groups:write,mpim:write&state=signup`}
                       >
                         <img
                           alt="Add to Slack"
