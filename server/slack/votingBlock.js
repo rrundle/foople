@@ -112,7 +112,7 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
       type: 'section',
       text: {
         type: 'plain_text',
-        text: 'What should we get for lunch today?',
+        text: 'What should we get for food today?',
       },
     },
     {
@@ -193,7 +193,6 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
     },
   ]
   if (refreshedData.type) {
-    console.log('type adding new button!: ', poll[poll.length - 1])
     poll[poll.length - 1].elements.push({
       type: 'button',
       text: {
@@ -204,7 +203,6 @@ const votingBlock = async ({ lunchData, vote: voteValue }) => {
       value: 'newPoll',
     })
   }
-  console.log('poll: ', poll)
   return poll
 }
 

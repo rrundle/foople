@@ -21,7 +21,7 @@ const Error500 = () => {
             </div>
             <div>
               <Link
-                to={`${process.env.PUBLIC_URL}/dashboard/default`}
+                to={`/dashboard/default`}
                 className="btn btn-primary-gradien"
               >
                 {' '}

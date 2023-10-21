@@ -26,17 +26,16 @@ const Dashboard = ({ usersSpots, getSpots, removeSpots, auth, authData }) => {
 
   const augmentData = (usersSpots) => {
     const cleanedData = usersSpots.map((spot) => {
-      const { url, name, id: spotId } = spot
+      const { url, name, id: spotId, addedBy } = spot
       return {
         id: spotId,
-        restaurant: name,
-        'Added By': 'Michael Scott',
-        'Yelp Link': (
+        restaurant: (
           <a href={url} target="_blank" rel="noopener noreferrer">
-            {url}
+            {name}
           </a>
         ),
-        'Voted For': '',
+        'Added By': addedBy,
+        // 'Voted For': '',
       }
     })
     return cleanedData

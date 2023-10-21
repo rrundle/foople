@@ -1,5 +1,3 @@
-import { baseUri } from '../config'
-
 const updateSubscription = (paymentInfo) => async (dispatch, getState) => {
   const {
     authData: { teamId, stripeId },
@@ -18,16 +16,10 @@ const updateSubscription = (paymentInfo) => async (dispatch, getState) => {
       'Content-Type': 'application/json',
     },
   }
-  console.log('options', options)
 
   try {
-    const response = await fetch(
-      `${baseUri}/payment/update-subscription`,
-      options,
-    )
-    console.log('response', response)
+    const response = await fetch(`/payment/update-subscription`, options)
     const body = await response.json()
-    console.log('body', body)
     return body
   } catch (err) {
     console.error(err)

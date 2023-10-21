@@ -18,7 +18,6 @@ export class Datatable extends Component {
   componentDidUpdate(prevProps) {
     const { myData } = this.props
     const { myData: previousData } = prevProps
-    console.log('myData in update hook: ', myData)
     if (myData.length !== previousData.length) {
       this.setState({
         myData,
@@ -223,7 +222,7 @@ export class Datatable extends Component {
           defaultPageSize={pageSize}
           className={myClass}
           showPagination={pagination}
-          noDataText="No data right now, head to Slack and add some with `/lunch add`"
+          noDataText="No spots right now, head to Slack and add some with `/foople add`"
         />
         <ToastContainer />
       </Fragment>

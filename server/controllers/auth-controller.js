@@ -8,6 +8,7 @@ const { generateJWT } = require('../jwt')
 const { mongoClient } = require('../database')
 const { refreshJwt, verifyJwt } = require('../jwt')
 const { sendMessageToChannel } = require('../helpers/slack-messaging')
+const { sendWelcome } = require('./welcome-controller')
 
 const isPaymentEnabled = process.env.PAYMENT_FEATURE_ENABLED
 
@@ -30,30 +31,26 @@ const checkAuth = async (req, res) => {
   } else {
     res.status('401').send({
       authed: false,
-      message: 'couldnt refresh jwt',
+      message: "couldn't refresh jwt",
     })
   }
 }
 
 const oauth = async (req, res) => {
   const { code, state } = req.body
-  console.log('code', code)
-  console.log('state', state)
-  // For some reason I get an error with v2 on users.idenity (login) calls
-  // and an error if I dont use v2 with the signup call
+  // For some reason I get an error with v2 on users.identity (login) calls
+  // and an error if I don't use v2 with the signup call
   // TODO check on API updates in case this might break, but should be stable
-  // if we dont update the version
+  // if we don't update the version
   const uri = state.includes('login')
     ? 'https://slack.com/api/oauth.access'
     : 'https://slack.com/api/oauth.v2.access'
-  console.log('uri', uri)
 
   const body = qs.stringify({
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
     code,
   })
-  console.log('body', body)
 
   const options = {
     method: 'POST',
@@ -66,51 +63,75 @@ const oauth = async (req, res) => {
   try {
     const request = await fetch(uri, options)
     const response = await request.json()
-    console.log('response', response)
     if (!response.ok) throw new Error(response.error)
     // insert the new client into the database
     const {
       team: { id: teamId } = {},
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
-    console.log(
-      '🚀 ~ file: auth-controller.js ~ line 74 ~ oauth ~ teamId',
-      teamId,
-    )
 
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')
     const [company, adminUser] = await authCollection.find({}).toArray()
+
     if (state === 'login' && !company) {
-      console.log('NO USER MUST SIGN UP')
+      // no user, we have user data but no company data
+      // save user data and get company data
+      await createAdmin(response, authCollection)
+
       return res.status('200').send({
         message: 'signup needed',
       })
     }
 
     if (state === 'login.signup' && !adminUser) {
-      console.log('NEW ADMIN USER!!!')
+      // New Admin User
       try {
         // company added but not the user
-        const admin = await createAdmin(response, authCollection)
-        console.log('admin: ', admin)
+        await createAdmin(response, authCollection)
         const authedUser = await createToken(company)
         return res.status('200').send({
           message: 'added admin user, full auth',
           token: authedUser,
         })
       } catch (err) {
-        console.log('error in creating admin user')
         return res.status('400').send({
           message: 'error in creating admin user',
         })
       }
     }
 
-    if ((company || {})._id) {
-      const authedUser = await createToken(company)
+    if ((company || {})._id && state !== 'signup') {
+      // Company already exists
+      const authedUser = await createToken(adminUser || company)
       return res.status('200').send({
         message: !adminUser ? 'existing user' : 'authed existing user',
+        token: authedUser,
+      })
+    }
+
+    if ((company || {})._id && state === 'signup') {
+      // user exists but company doesn't
+      const newUser = await createCompany({
+        data: response,
+        userEmail: company.user.email,
+        userSlackId: company.user.id,
+        teamId: company.team.id,
+        authCollection,
+      })
+
+      const {
+        team: { id: team_id },
+        incoming_webhook: { channel_id },
+      } = newUser
+
+      await sendWelcome(team_id, channel_id)
+
+      // Auth user
+      const authedUser = await createToken(company)
+
+      return res.status('200').send({
+        message: 'authed existing user',
         token: authedUser,
       })
     }
@@ -123,6 +144,13 @@ const oauth = async (req, res) => {
       teamId,
       authCollection,
     })
+
+    const {
+      team: { id: team_id },
+      incoming_webhook: { channel_id },
+    } = newUser
+
+    await sendWelcome(team_id, channel_id)
 
     // Auth user
     const authedUser = await createToken(newUser)
@@ -138,88 +166,14 @@ const oauth = async (req, res) => {
   }
 }
 
-const welcome = async (req, res) => {
-  const {
-    body: {
-      companyInfo: {
-        authed_user: { access_token: userToken } = {},
-        incoming_webhook: { channel_id: channelId } = {},
-        bot_user_id: botUser,
-        team_id: teamId,
-      },
-      welcome,
-    },
-  } = req
-
-  try {
-    const inviteOptions = {
-      method: 'POST',
-      body: JSON.stringify({
-        channel: channelId,
-        users: botUser,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
-      },
-    }
-    const response = await fetch(
-      'https://slack.com/api/conversations.invite',
-      inviteOptions,
-    )
-    const inviteResponse = await response.json()
-    if (!inviteResponse.ok && inviteResponse.error !== 'already_in_channel') {
-      throw new Error('Could not invite bot to the channel')
-    }
-
-    if (welcome) {
-      const authCollection = await mongoClient(teamId, 'auth')
-      const [company] = await authCollection.find({}).toArray()
-      const { access_token: botToken } = company
-
-      const messageData = {
-        channel: channelId,
-        text:
-          'Great news! Foople has been added to your slack workspace!\nFoople lets you create polls to decide where to eat from a list of your favorite places.\nUse `/foople help` for a list of commands',
-      }
-
-      const messageOptions = {
-        method: 'POST',
-        body: JSON.stringify(messageData),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${botToken}`,
-        },
-        json: true,
-      }
-      const request = await fetch(
-        'https://slack.com/api/chat.postMessage',
-        messageOptions,
-      )
-      const messageResponse = await request.json()
-      if (!messageResponse.ok) {
-        throw new Error('could not send welcome message to the team')
-      } else res.sendStatus(200)
-    } else {
-      res.sendStatus(200)
-    }
-  } catch (err) {
-    console.log('err: ', err)
-    res.status(400).send({
-      message: err.message,
-    })
-  }
-}
-
 const createAdmin = async (userData, authCollection) => {
-  console.log('userData: ', userData)
   try {
     await authCollection.insertOne({
       ...userData,
     })
     return userData
   } catch (err) {
-    console.log('err in creating admin user: ', err)
+    console.error('err in creating admin user: ', err)
   }
 }
 
@@ -230,28 +184,25 @@ const createCompany = async ({
   teamId,
   authCollection,
 }) => {
-  console.log('teamId in create company', teamId)
-
-  stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
-  const stripCustomer = isPaymentEnabled
-    ? await stripe.customers.create({
-        email: userEmail,
-        description: `slack UserId: ${userSlackId}`,
-      })
-    : null
+  // stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
+  // const stripCustomer = isPaymentEnabled
+  //   ? await stripe.customers.create({
+  //       email: userEmail,
+  //       description: `slack UserId: ${userSlackId}`,
+  //     })
+  //   : null
 
   const trialPeriodStart = moment()
 
   const authData = {
     ...data,
     name: 'admin',
-    stripeId: isPaymentEnabled ? stripCustomer.id : null,
+    // stripeId: isPaymentEnabled ? stripCustomer.id : null,
     status: AccountStatus.Trial,
     trialPeriodStart: trialPeriodStart.toDate(),
   }
 
   // new client, insert
-  console.log('new client, inserting!')
   await authCollection.insertOne({
     ...authData,
   })
@@ -302,24 +253,22 @@ const sendSignupReminder = async (teamId, timeLeft) => {
   const [company, user] = await authCollection.find({}).toArray()
   switch (company.status) {
     case AccountStatus.Trial:
-      console.log('channel_id: ', company.incoming_webhook.channel_id)
       // You only have {timeLeft} days left!
       const messageText = timeLeft
         ? `:wave: Just a reminder that you only have ${timeLeft} days left in your Foople trial.`
         : `:wave: Your Foople trial is expiring today! Click here to keep it going for your team <https://foople.club/join> `
 
-      const message = await sendMessageToChannel({
+      await sendMessageToChannel({
         accessToken: company.access_token,
         message: messageText,
         channelId: user.user.id,
       })
-      console.log('message', message)
       break
     case AccountStatus.TrialExpired:
-      console.log('send email reminder to sign up, theres still time!')
+      // send email reminder to sign up, theres still time!
       break
     case AccountStatus.Canceled:
-      console.log('send email anyway we can win you back?')
+      // send email anyway can we win you back?
       break
     default:
       // no email because we should send thank you when they pay.
@@ -337,7 +286,6 @@ const createToken = async (data) => {
 module.exports = {
   checkAuth,
   oauth,
-  welcome,
   createCompany,
   createToken,
 }

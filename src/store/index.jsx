@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { config } from '../config'
 
-// middlewares
+// middleware
 import thunkMiddleware from 'redux-thunk'
 
 // Import custom components
@@ -34,13 +34,14 @@ const store = createStore(
 )
 
 // Only log to the console in dev mode
-// const environment = config.get('environment') // TODO FIX THIS
-// console.log('environment: ', environment);
-// const draw = () => environment === 'dev' ? console.log(store.getState()) : store.getState()
-const draw = () => console.log(store.getState())
+const environment = config.get('environment') // TODO FIX THIS
+const draw = () =>
+  environment === 'dev'
+    ? console.log(store.getState())
+    : console.log(store.getState()) // TODO remove console.log in production
 store.subscribe(draw)
 
-const unsubscribe = store.subscribe(() => {
+export const unsubscribe = store.subscribe(() => {
   const state = store.getState()
   saveToLocalStorage(state)
 })

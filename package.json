@@ -2,7 +2,7 @@
   "name": "foople",
   "version": "1.0.0",
   "engines": {
-    "node": "14.0.0",
+    "node": "14.18.0",
     "npm": "5.5.1"
   },
   "main": "app.js",
@@ -10,14 +10,15 @@
   "author": "rrundle",
   "license": "MIT",
   "private": true,
+  "homepage": "https://foople.herokuapp.com",
   "scripts": {
     "precommit": "lint-staged",
-    "nodemon": "nodemon app.js",
-    "start": "nodemon app.js",
+    "start:server": "nodemon app.js",
+    "start": "react-scripts start",
     "start:browser": "react-scripts start",
-    "build:browser": "react-scripts build",
-    "test:browser": "react-scripts test",
-    "eject:browser": "react-scripts eject"
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^1.1.2",
@@ -28,11 +29,13 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.3",
     "express-favicon": "^2.0.1",
+    "form-data": "^4.0.0",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "moment": "^2.29.1",
     "mongodb": "^3.2.3",
+    "node-cron": "^3.0.2",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.14.0",
     "node-schedule": "^2.0.0",
@@ -51,7 +54,7 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "stripe": "^8.56.0",
-    "tiny-shortener": "^2.2.3",
+    "turl": "^1.1.2",
     "uuid": "^7.0.2"
   },
   "devDependencies": {

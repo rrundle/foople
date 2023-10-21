@@ -3,7 +3,6 @@ const { mongoUrl } = require('./config')
 
 const mongoClient = (teamId, type = 'spots') => {
   return new Promise((resolve, reject) => {
-    console.log('teamId in MongoClient', teamId)
     if (teamId) {
       MongoClient.connect(
         mongoUrl,
@@ -12,7 +11,7 @@ const mongoClient = (teamId, type = 'spots') => {
           useUnifiedTopology: true,
         },
         (err, client) => {
-          if (err) reject(err)
+          if (err) return reject(err)
           const db = client.db(type)
           const collection = db.collection(teamId)
           resolve(collection)

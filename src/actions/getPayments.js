@@ -1,5 +1,3 @@
-import { baseUri } from '../config'
-
 const getPayments = () => async (dispatch, getState) => {
   const {
     authData: { stripeId },
@@ -16,10 +14,8 @@ const getPayments = () => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`${baseUri}/payment/get-payments`, options)
-    console.log('response', response)
+    const response = await fetch(`/payment/get-payments`, options)
     const body = await response.json()
-    console.log('body', body)
     return body
   } catch (err) {
     console.error(err)

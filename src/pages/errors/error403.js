@@ -21,7 +21,7 @@ const Error403 = () => {
             </div>
             <div>
               <Link
-                to={`${process.env.PUBLIC_URL}/dashboard/default`}
+                to={`/dashboard/default`}
                 className="btn btn-success-gradien"
               >
                 {' '}

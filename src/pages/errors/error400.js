@@ -21,7 +21,7 @@ const Error400 = () => {
             </div>
             <div>
               <Link
-                to={`${process.env.PUBLIC_URL}/app/dashboard/default`}
+                to={`/app/dashboard/default`}
                 className="btn btn-info-gradien"
               >
                 {' '}
