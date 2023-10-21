@@ -7,7 +7,7 @@ const Footer = (props) => {
         <div className="row">
           <div className="col-md-6 footer-copyright">
             <p className="mb-0">
-              Copyright 2020 © Lunch Poll All rights reserved.
+              {`Copyright ${new Date().getFullYear()}© Foople All rights reserved.`}
             </p>
           </div>
           {/* <div className="col-md-6">

@@ -1,12 +1,11 @@
 const fetch = require('node-fetch')
-const { mongoClient, options } = require('../database')
-
-require('dotenv').config()
+const { serverConfig } = require('../config')
+const { options } = require('./helpers')
 
 const dialog = {
   dialog: {
     callback_id: 'search_spot',
-    title: 'Search for a lunch spot',
+    title: 'Search for a food spot',
     submit_label: 'Find',
     elements: [
       {
@@ -25,16 +24,15 @@ const dialog = {
   },
 }
 
-const launchSearchSpots = async ({ teamId, triggerId, token }) => {
-  const userCollection = await mongoClient(teamId, 'auth')
-  const data = await userCollection.findOne()
-  const requestData = {
-    bearerToken: data.access_token,
-    ...dialog,
-    token: token,
-    trigger_id: triggerId,
-  }
+const launchSearchSpots = async (triggerId) => {
   try {
+    const requestData = {
+      bearerToken: serverConfig.get('oauthToken'),
+      token: serverConfig.get('oauthToken'),
+      ...dialog,
+      trigger_id: triggerId,
+    }
+
     const response = await fetch(
       'https://slack.com/api/dialog.open',
       options({ data: requestData }),

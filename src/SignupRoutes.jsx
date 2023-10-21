@@ -12,19 +12,16 @@ import Welcome from './auth/welcome'
 // payment components
 
 const SignupRoutes = () => {
-  const [verifiedSignup, setVerifiedSignup] = useState(true) // TODO CHANGE!!!
-  const [checkingSignupStatus, setCheckingSignupStatus] = useState(false) // TODO CHANGE!!!
-  console.log('checkingSignupStatus: ', checkingSignupStatus)
-  console.log('verifiedSignup: ', verifiedSignup)
+  const [verifiedSignup, setVerifiedSignup] = useState(false)
+  const [checkingSignupStatus, setCheckingSignupStatus] = useState(true)
 
   useEffect(() => {
-    // checkSignupStatus()
+    checkSignupStatus()
     // only want to run this on mount
   }, [])
 
   const checkSignupStatus = async () => {
     const signupCookie = Cookies.get('signup-process')
-    console.log('signupCookie: ', signupCookie)
     if (!signupCookie) {
       setVerifiedSignup(false)
       return setCheckingSignupStatus(false)
@@ -40,26 +37,19 @@ const SignupRoutes = () => {
         <SvgSpinner />
       ) : verifiedSignup ? (
         <>
+          <Route exact path={`/signup/welcome`} component={Welcome} />
+          <Route exact path={`/signup/new`} component={Signup} />
           <Route
             exact
-            path={`${process.env.PUBLIC_URL}/signup/welcome`}
-            component={Welcome}
-          />
-          <Route
-            exact
-            path={`${process.env.PUBLIC_URL}/signup/new`}
-            component={Signup}
-          />
-          <Route
-            exact
-            path={`${process.env.PUBLIC_URL}/signup`}
-            render={() => (
-              <Redirect to={`${process.env.PUBLIC_URL}/signup/new`} />
-            )}
+            path={`/signup`}
+            render={() => <Redirect to={`/signup/new`} />}
           />
         </>
       ) : (
-        <Redirect to={`${process.env.PUBLIC_URL}/signup/new`} />
+        <>
+          <Route exact path={`/signup/new`} component={Signup} />
+          <Redirect to={`/signup/new`} />
+        </>
       )}
     </>
   )

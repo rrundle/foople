@@ -1,10 +1,6 @@
 const fetch = require('node-fetch')
 
 const sendMessageToChannel = async ({ accessToken, message, channelId }) => {
-  console.log('accessToken', accessToken)
-  console.log('message', message)
-  console.log('channelId', channelId)
-
   const data = {
     channel: channelId,
     text: message,
@@ -26,7 +22,7 @@ const sendMessageToChannel = async ({ accessToken, message, channelId }) => {
   return body
 }
 
-const sendEphemralToChannel = async ({
+const sendEphemeralToChannel = async ({
   accessToken,
   message,
   channelId,
@@ -37,7 +33,6 @@ const sendEphemralToChannel = async ({
     text: message,
     user,
   }
-  console.log('data in ephemeral', data)
 
   const messageOptions = {
     method: 'POST',
@@ -57,5 +52,5 @@ const sendEphemralToChannel = async ({
 
 module.exports = {
   sendMessageToChannel,
-  sendEphemralToChannel,
+  sendEphemeralToChannel,
 }

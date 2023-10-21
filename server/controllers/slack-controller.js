@@ -1,21 +1,16 @@
 const fetch = require('node-fetch')
 
-const { options, triggerSlackPoll } = require('../slack/helpers')
 const { mongoClient } = require('../database')
 const { AccountStatus } = require('../constants')
+const { triggerSlackPoll } = require('../slack/helpers')
 const launchSearchSpots = require('../slack/searchSpots')
 const searchYelp = require('../slack/searchYelp')
 const votingBlock = require('../slack/votingBlock')
 const buildInteractiveMessage = require('../slack/buildInteractiveMessage')
 const buildHelpBlock = require('../slack/buildHelpBlock')
-const messageResponse = require('../slack/messageResponse')
-const { sendEphemralToChannel } = require('../helpers/slack-messaging')
+const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
 
 const slackLunchCommand = async (req, res) => {
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 15 ~ slackLunchCommand ~ req',
-    req,
-  )
   const {
     channel_id: channelId,
     response_url: webhookUrl,
@@ -26,12 +21,7 @@ const slackLunchCommand = async (req, res) => {
     user_id: userId,
   } = req.body
 
-  const responseText = text === 'help' ? 'Help is on the way!' : 'One sec...'
-
-  res.status(200).json({
-    response_type: 'ephemeral',
-    text: responseText,
-  })
+  res.status(200).send()
 
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
@@ -43,7 +33,7 @@ const slackLunchCommand = async (req, res) => {
       message =
         ':exclamation: Your free trial has expired. No problem, go to https://foople.com/app/account/payment to keep things going'
     }
-    return sendEphemralToChannel({
+    return sendEphemeralToChannel({
       accessToken: company.access_token,
       message,
       channelId,
@@ -52,7 +42,7 @@ const slackLunchCommand = async (req, res) => {
   }
 
   if (company.status === AccountStatus.Canceled) {
-    return sendEphemralToChannel({
+    return sendEphemeralToChannel({
       accessToken: company.access_token,
       message:
         ':no_entry_sign: Sorry but your account was canceled. Please contact your channel admin to get things running again.',
@@ -60,9 +50,8 @@ const slackLunchCommand = async (req, res) => {
       user: user.user_id,
     })
   }
-
   if (text === 'add') {
-    return launchSearchSpots({ teamId, triggerId, token })
+    return launchSearchSpots(triggerId)
   }
 
   if (text === 'help') {
@@ -70,10 +59,6 @@ const slackLunchCommand = async (req, res) => {
   }
 
   const lunchData = await triggerSlackPoll(teamId, text)
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 70 ~ slackLunchCommand ~ lunchData',
-    lunchData,
-  )
   let data = {
     bearerToken: process.env.SLACK_TOKEN,
     callback_id: 'poll_creator',
@@ -83,22 +68,19 @@ const slackLunchCommand = async (req, res) => {
     trigger_id: triggerId,
     user: userId,
   }
-  console.log(
-    '🚀 ~ file: slack-controller.js ~ line 80 ~ slackLunchCommand ~ data',
-    data,
-  )
 
   if (!Object.keys(lunchData).length) {
-    console.log('no length!')
     data.text =
-      ':exclamation: You don\'t have enough lunch spots saved to create a poll. You can do so by typing "/lunch add"'
+      ':exclamation: You don\'t have enough lunch spots saved to create a poll. You can do so by typing "/foople add"'
   } else {
     data.text = 'Thanks!'
     data.blocks = await votingBlock({ lunchData, user: null, vote: null })
   }
   try {
-    console.log('trying webhook!')
-    fetch(webhookUrl, options({ body: JSON.stringify(data) }))
+    await fetch(webhookUrl, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
   } catch (err) {
     console.error('error from creating poll: ', err)
   }
@@ -130,30 +112,37 @@ const slackInteractiveCommand = async (req, res) => {
     if (type === 'block_actions') {
       res.sendStatus(200)
       const [submission] = request.actions
-      const { team: { id: teamId } = {} } = request
+      const {
+        team: { id: teamId } = {},
+        user: { name: userName },
+      } = request
       // check if its a spot addition request
       if (submission.text.text === 'Choose') {
         // spot addition request
         const selectedSpot = JSON.parse(submission.value)
         const spotsCollection = await mongoClient(teamId, 'spots')
-        // check account status
+        // Needed to check if spot already exists!! Bug Ticket
         const matches = await spotsCollection.find({}).toArray()
-        console.log('matches: ', matches)
-        // insert in the database if it doesn't already exist
-        const data = await spotsCollection.updateOne(
-          selectedSpot,
-          { $set: selectedSpot },
-          { upsert: true },
-        )
+
+        const alreadyAdded = matches.some((spot) => spot.id === selectedSpot.id)
+
+        if (!alreadyAdded) {
+          // insert in the database if it doesn't already exist
+          await spotsCollection.updateOne(
+            selectedSpot,
+            { $set: { addedBy: userName } },
+            { upsert: true },
+          )
+        }
         // send back message saying successful, failure, or already added
-        const options = {
+        const interactiveOptions = {
           method: 'POST',
           body: JSON.stringify({
             channel: request.channel.id,
             token: request.token,
             user: request.user.id,
             type: 'section',
-            text: data.upsertedCount
+            text: !alreadyAdded
               ? `:tada: ${selectedSpot.name} has been added to the list!`
               : ':dancer: Great minds think alike! This spot has already been added. Try another place.',
           }),
@@ -163,7 +152,7 @@ const slackInteractiveCommand = async (req, res) => {
           },
         }
         try {
-          await fetch(request.response_url, options)
+          await fetch(request.response_url, interactiveOptions)
         } catch (err) {
           console.error('err: ', err)
         }
@@ -188,10 +177,10 @@ const slackInteractiveCommand = async (req, res) => {
             vote,
           })
 
-          await fetch(
-            request.response_url,
-            options({ body: JSON.stringify(data) }),
-          )
+          await fetch(request.response_url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+          })
         } catch (err) {
           console.error('err: ', err)
         }
@@ -201,9 +190,7 @@ const slackInteractiveCommand = async (req, res) => {
 }
 
 const handleMention = async (req, res) => {
-  console.log('req.body: ', req.body)
   const { challenge } = req.body
-  console.log('challenge', challenge)
   res.status(200).json({
     challenge,
   })

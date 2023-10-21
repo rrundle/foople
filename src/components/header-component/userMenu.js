@@ -1,19 +1,20 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import man from '../../assets/images/dashboard/user.png'
-import { CreditCard, DollarSign, Settings, LogOut } from 'react-feather'
+import user from '../../assets/images/dashboard/default_avatar.jpg'
+import { CreditCard, DollarSign, LogOut } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router'
 import Cookies from 'js-cookie'
+
 import { SET_AUTH, ADD_USER, REQUEST_LOGOUT } from '../../constants/actionTypes'
 
-const UserMenu = ({ history, setAuth, setUser, requestLogout, authData}) => {
+const UserMenu = ({ history, setAuth, setUser, requestLogout, authData }) => {
   const [profile, setProfile] = useState('')
   const isPaymentEnabled = process.env.PAYMENT_FEATURE_ENABLED
   const { avatarSmall } = authData
 
   useEffect(() => {
-    setProfile(avatarSmall || man)
+    setProfile(avatarSmall || user)
   }, [])
 
   const logOut = () => {
@@ -22,7 +23,7 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData}) => {
     setAuth(false)
     setUser({})
     requestLogout()
-    history.push(`${process.env.PUBLIC_URL}/login`)
+    history.push(`/login`)
   }
 
   return (
@@ -41,29 +42,27 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData}) => {
         </div>
         <ul className="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
           {/* <li>
-            <Link to={`${process.env.PUBLIC_URL}/users/userEdit`}>
+            <Link to={`/users/userEdit`}>
               <Settings />
               Settings
             </Link>
           </li> */}
-          {
-            isPaymentEnabled && (
-              <>
+          {isPaymentEnabled && (
+            <>
               <li>
-                <Link to={`${process.env.PUBLIC_URL}/price/pricing`}>
+                <Link to={`/price/pricing`}>
                   <DollarSign />
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to={`${process.env.PUBLIC_URL}/app/account/payment`}>
+                <Link to={`/app/account/payment`}>
                   <CreditCard />
                   Billing
                 </Link>
               </li>
-              </>
-            )
-          }
+            </>
+          )}
           <li>
             <a onClick={logOut} href="#!">
               <LogOut /> Log out
@@ -75,7 +74,7 @@ const UserMenu = ({ history, setAuth, setUser, requestLogout, authData}) => {
   )
 }
 
-const mapStateToProps = ({authData}) => ({authData})
+const mapStateToProps = ({ authData }) => ({ authData })
 
 const mapDispatchToProps = (dispatch) => ({
   setAuth: (value) => dispatch({ type: SET_AUTH, value }),
@@ -83,4 +82,6 @@ const mapDispatchToProps = (dispatch) => ({
   requestLogout: () => dispatch({ type: REQUEST_LOGOUT }),
 })
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserMenu))
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(UserMenu),
+)
