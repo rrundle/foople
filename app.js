@@ -22,7 +22,10 @@ const {
   updateSubscription,
   getPaymentMethods,
 } = require('./server/controllers/payment-controller')
-const { startTokenRotation } = require('./server/cronjobs/token-rotation')
+const {
+  startTokenRotation,
+  sendTwilioMessage,
+} = require('./server/cronjobs/token-rotation')
 
 require('dotenv').config()
 
@@ -119,4 +122,5 @@ app.post('/clear/user', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
   startTokenRotation()
+  sendTwilioMessage()
 })
