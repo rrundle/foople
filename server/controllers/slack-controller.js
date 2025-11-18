@@ -35,6 +35,7 @@ const slackLunchCommand = async (req, res) => {
     }
     return sendEphemeralToChannel({
       accessToken: company.access_token,
+      teamId,
       message,
       channelId,
       user: user.user_id,
@@ -44,6 +45,7 @@ const slackLunchCommand = async (req, res) => {
   if (company.status === AccountStatus.Canceled) {
     return sendEphemeralToChannel({
       accessToken: company.access_token,
+      teamId,
       message:
         ':no_entry_sign: Sorry but your account was canceled. Please contact your channel admin to get things running again.',
       channelId,
@@ -51,7 +53,7 @@ const slackLunchCommand = async (req, res) => {
     })
   }
   if (text === 'add') {
-    return launchSearchSpots(triggerId)
+    return launchSearchSpots(triggerId, teamId)
   }
 
   if (text === 'help') {

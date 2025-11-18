@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const { mongoClient } = require('../database')
+const { getFreshAccessToken } = require('../helpers/token-refresh')
 
 const welcome = async (req, res) => {
   const {
@@ -15,6 +16,10 @@ const welcome = async (req, res) => {
   } = req
 
   try {
+    // Get fresh token for the team (for new installs, use the provided token)
+    const freshToken = await getFreshAccessToken(teamId)
+    const tokenToUse = freshToken || userToken
+
     const inviteOptions = {
       method: 'POST',
       body: JSON.stringify({
@@ -23,7 +28,7 @@ const welcome = async (req, res) => {
       }),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
+        Authorization: `Bearer ${tokenToUse}`,
       },
     }
     const response = await fetch(
@@ -36,7 +41,7 @@ const welcome = async (req, res) => {
     }
 
     if (welcome) {
-      const messageResponse = sendWelcome(teamId, channelId)
+      const messageResponse = await sendWelcome(teamId, channelId)
       if (!messageResponse.ok) {
         throw new Error('could not send welcome message to the team')
       } else res.sendStatus(200)
@@ -51,9 +56,13 @@ const welcome = async (req, res) => {
 }
 
 const sendWelcome = async (teamId, channelId) => {
-  const authCollection = await mongoClient(teamId, 'auth')
-  const [company] = await authCollection.find({}).toArray()
-  const { access_token: botToken } = company
+  // Get fresh access token for the team
+  const botToken = await getFreshAccessToken(teamId)
+
+  if (!botToken) {
+    console.error('sendWelcome: Failed to get access token for team', teamId)
+    return { ok: false, error: 'token_refresh_failed' }
+  }
 
   const messageData = {
     channel: channelId,
@@ -79,7 +88,7 @@ const sendWelcome = async (teamId, channelId) => {
     const messageResponse = await request.json()
     return messageResponse
   } catch (err) {
-    console.error('file: welcome-controller.js ~ line 108 ~ err', err)
+    console.error('sendWelcome error:', err)
     return { ok: false }
   }
 }

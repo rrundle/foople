@@ -38,13 +38,8 @@ const checkAuth = async (req, res) => {
 
 const oauth = async (req, res) => {
   const { code, state } = req.body
-  // For some reason I get an error with v2 on users.identity (login) calls
-  // and an error if I don't use v2 with the signup call
-  // TODO check on API updates in case this might break, but should be stable
-  // if we don't update the version
-  const uri = state.includes('login')
-    ? 'https://slack.com/api/oauth.access'
-    : 'https://slack.com/api/oauth.v2.access'
+  // Always use v2 for token rotation support - this provides refresh tokens
+  const uri = 'https://slack.com/api/oauth.v2.access'
 
   const body = qs.stringify({
     client_id: process.env.CLIENT_ID,
@@ -64,6 +59,10 @@ const oauth = async (req, res) => {
     const request = await fetch(uri, options)
     const response = await request.json()
     if (!response.ok) throw new Error(response.error)
+
+    // Calculate token expiry time (Slack typically provides 12 hours = 43200 seconds)
+    const expiresIn = response.expires_in || 43200
+    const tokenExpiresAt = new Date(Date.now() + expiresIn * 1000)
     // insert the new client into the database
     const {
       team: { id: teamId } = {},
@@ -77,7 +76,7 @@ const oauth = async (req, res) => {
     if (state === 'login' && !company) {
       // no user, we have user data but no company data
       // save user data and get company data
-      await createAdmin(response, authCollection)
+      await createAdmin(response, authCollection, tokenExpiresAt)
 
       return res.status('200').send({
         message: 'signup needed',
@@ -88,7 +87,7 @@ const oauth = async (req, res) => {
       // New Admin User
       try {
         // company added but not the user
-        await createAdmin(response, authCollection)
+        await createAdmin(response, authCollection, tokenExpiresAt)
         const authedUser = await createToken(company)
         return res.status('200').send({
           message: 'added admin user, full auth',
@@ -118,6 +117,7 @@ const oauth = async (req, res) => {
         userSlackId: company.user.id,
         teamId: company.team.id,
         authCollection,
+        tokenExpiresAt,
       })
 
       const {
@@ -143,6 +143,7 @@ const oauth = async (req, res) => {
       userSlackId,
       teamId,
       authCollection,
+      tokenExpiresAt,
     })
 
     const {
@@ -166,12 +167,19 @@ const oauth = async (req, res) => {
   }
 }
 
-const createAdmin = async (userData, authCollection) => {
+const createAdmin = async (userData, authCollection, tokenExpiresAt) => {
   try {
-    await authCollection.insertOne({
+    const dataToStore = {
       ...userData,
-    })
-    return userData
+    }
+
+    // Add token expiry information if available
+    if (tokenExpiresAt) {
+      dataToStore.token_expires_at = tokenExpiresAt
+    }
+
+    await authCollection.insertOne(dataToStore)
+    return dataToStore
   } catch (err) {
     console.error('err in creating admin user: ', err)
   }
@@ -183,6 +191,7 @@ const createCompany = async ({
   userSlackId,
   teamId,
   authCollection,
+  tokenExpiresAt,
 }) => {
   // stripe.setApiKey(process.env.REACT_APP_STRIPE_SECRET_KEY)
   // const stripCustomer = isPaymentEnabled
@@ -200,6 +209,11 @@ const createCompany = async ({
     // stripeId: isPaymentEnabled ? stripCustomer.id : null,
     status: AccountStatus.Trial,
     trialPeriodStart: trialPeriodStart.toDate(),
+  }
+
+  // Add token expiry information if available
+  if (tokenExpiresAt) {
+    authData.token_expires_at = tokenExpiresAt
   }
 
   // new client, insert
@@ -260,6 +274,7 @@ const sendSignupReminder = async (teamId, timeLeft) => {
 
       await sendMessageToChannel({
         accessToken: company.access_token,
+        teamId,
         message: messageText,
         channelId: user.user.id,
       })

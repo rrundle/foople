@@ -22,10 +22,8 @@ const {
   updateSubscription,
   getPaymentMethods,
 } = require('./server/controllers/payment-controller')
-const {
-  startTokenRotation,
-  sendTwilioMessage,
-} = require('./server/cronjobs/token-rotation')
+// Token rotation is now handled on-demand via getFreshAccessToken()
+// No need for proactive cronjob since refresh happens automatically before API calls
 
 require('dotenv').config()
 
@@ -121,6 +119,7 @@ app.post('/clear/user', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
-  startTokenRotation()
-  sendTwilioMessage()
+  console.log(
+    'Slack token rotation: Automatic (on-demand refresh before API calls)',
+  )
 })

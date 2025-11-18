@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
 const { mongoClient } = require('./database')
+const { getFreshAccessToken } = require('./helpers/token-refresh')
 
-const generateJWT = (userData) => {
+const generateJWT = async (userData) => {
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
@@ -22,8 +23,17 @@ const generateJWT = (userData) => {
     trialPeriodStart,
   } = userData
 
+  // Get fresh Slack access token if available
+  let freshAccessToken = accessToken
+  if (teamId) {
+    const freshToken = await getFreshAccessToken(teamId)
+    if (freshToken) {
+      freshAccessToken = freshToken
+    }
+  }
+
   const payload = {
-    accessToken,
+    accessToken: freshAccessToken,
     avatarLarge,
     avatarSmall,
     email,
@@ -43,17 +53,18 @@ const generateJWT = (userData) => {
 }
 
 const refreshJwt = async (jwtStatus) => {
-  // TODO we should be getting updated data from the database
-  // instead of just refreshing the data from the cookie
+  // Gets updated data from the database including fresh Slack tokens
   const today = new Date()
   const expirationDate = new Date(today)
   expirationDate.setDate(today.getDate() + 60)
 
   const { decoded: { teamId } = {} } = jwtStatus
   if (!teamId) return null
+
   const userCollection = await mongoClient(teamId, 'auth')
   const userData = await userCollection.find({}).toArray()
   if (!userData.length) return undefined
+
   const [
     {
       access_token: accessToken,
@@ -73,8 +84,17 @@ const refreshJwt = async (jwtStatus) => {
     },
   ] = userData
 
+  // Get fresh Slack access token (will refresh if expired)
+  let freshAccessToken = accessToken
+  if (teamId) {
+    const freshToken = await getFreshAccessToken(teamId)
+    if (freshToken) {
+      freshAccessToken = freshToken
+    }
+  }
+
   const payload = {
-    accessToken,
+    accessToken: freshAccessToken,
     avatarLarge,
     avatarSmall,
     email,

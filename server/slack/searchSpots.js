@@ -1,7 +1,6 @@
 const fetch = require('node-fetch')
-const { serverConfig } = require('../config')
+const { getFreshAccessToken } = require('../helpers/token-refresh')
 const { options } = require('./helpers')
-const { sendTwilioMessage } = require('../../server/cronjobs/token-rotation')
 
 const dialog = {
   dialog: {
@@ -25,14 +24,20 @@ const dialog = {
   },
 }
 
-const launchSearchSpots = async (triggerId) => {
+const launchSearchSpots = async (triggerId, teamId) => {
   try {
-    await sendTwilioMessage(
-      `about to launch dialog ~ oauthToken: ${serverConfig.get('oauthToken')}`,
-    )
+    // Get fresh access token for the team
+    const accessToken = await getFreshAccessToken(teamId)
+    if (!accessToken) {
+      console.error(
+        'launchSearchSpots: Failed to get access token for team',
+        teamId,
+      )
+      return { ok: false, error: 'token_refresh_failed' }
+    }
+
     const requestData = {
-      bearerToken: serverConfig.get('oauthToken'),
-      // token: serverConfig.get('oauthToken'),
+      bearerToken: accessToken,
       ...dialog,
       trigger_id: triggerId,
     }
@@ -42,6 +47,11 @@ const launchSearchSpots = async (triggerId) => {
       options({ data: requestData }),
     )
     const body = await response.json()
+
+    if (!body.ok) {
+      console.error('launchSearchSpots error:', body.error)
+    }
+
     return body
   } catch (err) {
     console.error('launchSearchSpots ~ err:', err)
