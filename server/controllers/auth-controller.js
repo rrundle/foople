@@ -69,6 +69,8 @@ const oauth = async (req, res) => {
     console.log(`[OAuth] Slack response:`, { ok: response.ok, error: response.error })
     if (!response.ok) throw new Error(response.error)
 
+    console.log(`[OAuth] Full response structure:`, JSON.stringify(response, null, 2))
+
     // Calculate token expiry time (only for v2 responses)
     // v1 responses don't have expires_in or refresh tokens
     let tokenExpiresAt = null
@@ -82,7 +84,7 @@ const oauth = async (req, res) => {
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
 
-    console.log(`[OAuth] Team ID: ${teamId}, User: ${userSlackId}`)
+    console.log(`[OAuth] Team ID: ${teamId}, User: ${userSlackId}, Email: ${userEmail}`)
     
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')
@@ -127,28 +129,30 @@ const oauth = async (req, res) => {
     }
 
     if ((company || {})._id && state === 'signup') {
-      // user exists but company doesn't
-      const newUser = await createCompany({
-        data: response,
-        userEmail: company.user.email,
-        userSlackId: company.user.id,
-        teamId: company.team.id,
-        authCollection,
-        tokenExpiresAt,
-      })
-
-      const {
-        team: { id: team_id },
-        incoming_webhook: { channel_id },
-      } = newUser
-
-      await sendWelcome(team_id, channel_id)
-
-      // Auth user
+      // Re-installation: company already exists, user clicked "Add to Slack" again
+      console.log(`[OAuth] Re-installation detected for teamId: ${teamId}`)
+      
+      // Update the tokens from the new OAuth response (they may have changed)
+      const updateData = {
+        ...response,
+      }
+      
+      // Add token expiry information if available
+      if (tokenExpiresAt) {
+        updateData.token_expires_at = tokenExpiresAt
+      }
+      
+      // Update the existing company record with new tokens
+      await authCollection.updateOne(
+        { 'team.id': teamId },
+        { $set: updateData }
+      )
+      
+      // Auth user with existing company data
       const authedUser = await createToken(company)
 
       return res.status('200').send({
-        message: 'authed existing user',
+        message: 'reinstalled - tokens updated',
         token: authedUser,
       })
     }
