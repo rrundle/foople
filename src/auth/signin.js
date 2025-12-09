@@ -25,7 +25,7 @@ const Signin = () => (
                       }}
                     />
                   </div>
-                  <div className="card mt-4 login-card">
+                  <div className="mt-4 login-card">
                     <div className="card-body">
                       <SlackSignIn />
                     </div>
