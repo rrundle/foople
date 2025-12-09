@@ -1,10 +1,11 @@
 require('dotenv').config()
 
-// dev
+// Determine base URI based on environment
 const baseUri =
   process.env.REACT_APP_ENV === 'dev'
     ? 'http://localhost:2999'
-    : 'https://foople.herokuapp.com'
+    : process.env.REACT_APP_BASE_URI || 'https://foople.herokuapp.com'
+console.log('🚀 ~ baseUri:', baseUri)
 
 const cookieExpiration = 7
 

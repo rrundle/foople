@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const tiny = require('turl')
+const { getFreshAccessToken } = require('../helpers/token-refresh')
 
 const createMessage = async (sectionData) => {
   const messageArray = [
@@ -54,29 +55,36 @@ const interactiveMessageData = async (lunchData, request) => {
   }
 }
 
-const buildInteractiveMessage = (body, request) => {
+const buildInteractiveMessage = (yelpResults, request) => {
   return new Promise(async (resolve, reject) => {
-    const message = await interactiveMessageData(body, request)
-
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({
-        channel: request.channel.id,
-        token: request.token,
-        user: request.user.id,
-        ...message,
-      }),
-      headers: {
-        Authorization: `Bearer ${process.env.SLACK_}`,
-        'Content-Type': 'application/json',
-      },
-    }
-
     try {
+      const message = await interactiveMessageData(yelpResults, request)
+
+      // Get fresh access token for the team
+      const teamId = request.team?.id
+      const accessToken = teamId ? await getFreshAccessToken(teamId) : null
+
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({
+          channel: request.channel.id,
+          token: request.token,
+          user: request.user.id,
+          ...message,
+        }),
+        headers: {
+          Authorization: accessToken
+            ? `Bearer ${accessToken}`
+            : `Bearer ${process.env.SLACK_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+
       const response = await fetch(request.response_url, options)
-      const body = await response.json()
-      resolve(body)
+      const responseBody = await response.json()
+      resolve(responseBody)
     } catch (err) {
+      console.error('buildInteractiveMessage error:', err)
       reject(err)
     }
   })

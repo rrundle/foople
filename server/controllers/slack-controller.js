@@ -9,8 +9,10 @@ const votingBlock = require('../slack/votingBlock')
 const buildInteractiveMessage = require('../slack/buildInteractiveMessage')
 const buildHelpBlock = require('../slack/buildHelpBlock')
 const { sendEphemeralToChannel } = require('../helpers/slack-messaging')
+const { getFreshAccessToken } = require('../helpers/token-refresh')
 
 const slackLunchCommand = async (req, res) => {
+  const startTime = Date.now()
   const {
     channel_id: channelId,
     response_url: webhookUrl,
@@ -21,10 +23,56 @@ const slackLunchCommand = async (req, res) => {
     user_id: userId,
   } = req.body
 
-  res.status(200).send()
+  console.log(`[${teamId}] /foople command received, text="${text}"`)
 
+  // CRITICAL: Respond to Slack immediately (within 3 seconds)
+  res.status(200).send()
+  console.log(`[${teamId}] Response sent in ${Date.now() - startTime}ms`)
+
+  // For dialog/modal interactions, use trigger_id IMMEDIATELY before it expires
+  // MongoDB queries are taking 3.5+ seconds - too slow for 3-second trigger_id limit!
+  if (text === 'add') {
+    console.log(`[${teamId}] Fast-path: launching dialog with minimal delay`)
+    // Get token and launch dialog in background - don't await DB queries
+    ;(async () => {
+      try {
+        const dialogStart = Date.now()
+        // Get token without checking status (status check requires slow DB query)
+        const freshAccessToken = await getFreshAccessToken(teamId)
+        console.log(
+          `[${teamId}] Token for dialog fetched in ${
+            Date.now() - dialogStart
+          }ms`,
+        )
+
+        await launchSearchSpots(triggerId, teamId, freshAccessToken)
+        console.log(
+          `[${teamId}] Dialog launched in ${Date.now() - dialogStart}ms total`,
+        )
+      } catch (err) {
+        console.error(`[${teamId}] Error in fast-path dialog:`, err)
+      }
+    })()
+    return // Exit immediately, background task continues
+  }
+
+  // For non-dialog commands, we can do normal async processing
+  const tokenStartTime = Date.now()
+  const freshAccessToken = await getFreshAccessToken(teamId)
+  console.log(
+    `[${teamId}] Token fetched in ${Date.now() - tokenStartTime}ms (total: ${
+      Date.now() - startTime
+    }ms)`,
+  )
+
+  const dbStartTime = Date.now()
   const authCollection = await mongoClient(teamId, 'auth')
   const [company, { user }] = await authCollection.find({}).toArray()
+  console.log(
+    `[${teamId}] DB query in ${Date.now() - dbStartTime}ms (total: ${
+      Date.now() - startTime
+    }ms)`,
+  )
 
   if (company.status === AccountStatus.TrialExpired) {
     let message =
@@ -34,7 +82,8 @@ const slackLunchCommand = async (req, res) => {
         ':exclamation: Your free trial has expired. No problem, go to https://foople.com/app/account/payment to keep things going'
     }
     return sendEphemeralToChannel({
-      accessToken: company.access_token,
+      accessToken: freshAccessToken || company.access_token,
+      teamId,
       message,
       channelId,
       user: user.user_id,
@@ -43,15 +92,13 @@ const slackLunchCommand = async (req, res) => {
 
   if (company.status === AccountStatus.Canceled) {
     return sendEphemeralToChannel({
-      accessToken: company.access_token,
+      accessToken: freshAccessToken || company.access_token,
+      teamId,
       message:
         ':no_entry_sign: Sorry but your account was canceled. Please contact your channel admin to get things running again.',
       channelId,
       user: user.user_id,
     })
-  }
-  if (text === 'add') {
-    return launchSearchSpots(triggerId)
   }
 
   if (text === 'help') {

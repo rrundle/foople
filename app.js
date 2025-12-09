@@ -22,7 +22,8 @@ const {
   updateSubscription,
   getPaymentMethods,
 } = require('./server/controllers/payment-controller')
-const { startTokenRotation } = require('./server/cronjobs/token-rotation')
+// Token rotation is now handled on-demand via getFreshAccessToken()
+// No need for proactive cronjob since refresh happens automatically before API calls
 
 require('dotenv').config()
 
@@ -38,12 +39,7 @@ app.use(favicon(__dirname + '/build/favicon.ico'))
 app.use(express.static(__dirname))
 app.use(express.static(path.join(__dirname, 'build')))
 
-// Production
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'))
-})
-
-/* ROUTES */
+/* API ROUTES - These must come BEFORE the catch-all route */
 
 /* HANDLE SLASH COMMANDS */
 app.post('/lunch', slackLunchCommand)
@@ -116,7 +112,14 @@ app.post('/clear/user', async (req, res) => {
   }
 })
 
+/* CATCH-ALL ROUTE FOR REACT APP - Must be LAST after all API routes */
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'))
+})
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
-  startTokenRotation()
+  console.log(
+    'Slack token rotation: Automatic (on-demand refresh before API calls)',
+  )
 })

@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const { mongoClient } = require('../database')
+const { getFreshAccessToken } = require('../helpers/token-refresh')
 
 const buildHelpBlock = (body) => {
   return new Promise(async (resolve, reject) => {
@@ -51,27 +52,38 @@ const buildHelpBlock = (body) => {
       ],
     }
 
-    const collection = await mongoClient(body.team_id, 'auth')
-    const user = await collection.findOne()
-
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({
-        channel: user.incoming_webhook.channel_id,
-        token: body.token,
-        user: body.user_id,
-        ...message,
-      }),
-      headers: {
-        Authorization: `Bearer ${process.env.SLACK_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    }
     try {
+      const collection = await mongoClient(body.team_id, 'auth')
+      const user = await collection.findOne()
+
+      // Get fresh access token for the team
+      const accessToken = await getFreshAccessToken(body.team_id)
+      if (!accessToken) {
+        console.error(
+          'buildHelpBlock: Failed to get access token for team',
+          body.team_id,
+        )
+        return reject(new Error('token_refresh_failed'))
+      }
+
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({
+          channel: user.incoming_webhook.channel_id,
+          token: body.token,
+          user: body.user_id,
+          ...message,
+        }),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+
       const response = await fetch(user.incoming_webhook.url, options)
       resolve(response)
     } catch (err) {
-      console.error('err ', err)
+      console.error('buildHelpBlock error:', err)
       reject(err)
     }
   })

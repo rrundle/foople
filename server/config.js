@@ -3,7 +3,8 @@ require('dotenv').config()
 // const mongoUrl = 'mongodb://localhost:27017'
 
 // Connection URL - production
-const mongoUrl = `mongodb+srv://slotdp02:${process.env.MONGO_PASSWORD}@cluster0.p5pz6ok.mongodb.net/?retryWrites=true&w=majority`
+const mongoUrl = `mongodb+srv://slotdp02:${process.env.MONGO_PASSWORD}@cluster1.yow9df7.mongodb.net/?appName=Cluster1&retryWrites=true&w=majority`
+console.log('🚀 ~ mongoUrl:', mongoUrl)
 
 const YELP_TOKEN = process.env.YELP_TOKEN
 
