@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.REACT_APP_STRIPE_SECRET_KEY)
+const { v4: uuidv4 } = require('uuid')
 
 const { mongoClient } = require('../database')
 const { daysLeftInTrial } = require('../helpers/trial-calculations')
@@ -15,25 +16,34 @@ const createSubscription = async (req, res) => {
   if (status === AccountStatus.Active)
     throw new Error('Account already active, paymeny not needed')
   try {
-    // Attach the payment method to the customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerId,
-    })
+    let subscription = null
+    if (process.env.IS_APP_FREE) {
+      // Create the free subscription
+      subscription = {
+        customer: customerId,
+        id: uuidv4(),
+      }
+    } else {
+      // Create the subscription
+      subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: 'price_1GqkzjAdnCjPNFayzpl0BIAa' }],
+        expand: ['latest_invoice.payment_intent'],
+        trial_period_days: daysLeftInTrial(trialPeriodStart),
+      })
 
-    // Change the default invoice settings on the customer to the new payment method
-    await stripe.customers.update(customerId, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    })
+      // Attach the payment method to the customer
+      await stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customerId,
+      })
 
-    // Create the subscription
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ price: 'price_1GqkzjAdnCjPNFayzpl0BIAa' }],
-      expand: ['latest_invoice.payment_intent'],
-      trial_period_days: daysLeftInTrial(trialPeriodStart),
-    })
+      // Change the default invoice settings on the customer to the new payment method
+      await stripe.customers.update(customerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      })
+    }
 
     // Save the subscription info in the db, update to active
     const userCollection = await mongoClient(teamId, 'auth')
