@@ -63,7 +63,11 @@ const SlackAuth = ({ addUser, setAuth }) => {
             status: true,
             to: `/app/dashboard/default`,
           })
-        } else if (body.message === 'authed existing user' && body.token) {
+        } else if (
+          (body.message === 'authed existing user' ||
+            body.message === 'reinstalled - tokens updated') &&
+          body.token
+        ) {
           Cookies.set('lunch-session', body.token, {
             expires: cookieExpiration,
           })
