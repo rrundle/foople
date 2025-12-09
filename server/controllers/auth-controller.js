@@ -82,9 +82,13 @@ const oauth = async (req, res) => {
       user: { email: userEmail = '', id: userSlackId = '' } = {},
     } = response
 
+    console.log(`[OAuth] Team ID: ${teamId}, User: ${userSlackId}`)
+    
     if (!teamId) throw new Error('no team Id')
     const authCollection = await mongoClient(teamId, 'auth')
     const [company, adminUser] = await authCollection.find({}).toArray()
+    
+    console.log(`[OAuth] DB check - company exists: ${!!company}, adminUser exists: ${!!adminUser}, state: ${state}`)
 
     if (state === 'login' && !company) {
       // no user, we have user data but no company data
@@ -150,6 +154,7 @@ const oauth = async (req, res) => {
     }
 
     // state === 'signup', new customer, insert
+    console.log(`[OAuth] Creating new company for teamId: ${teamId}`)
     const newUser = await createCompany({
       data: response,
       userEmail,
@@ -159,6 +164,7 @@ const oauth = async (req, res) => {
       tokenExpiresAt,
     })
 
+    console.log(`[OAuth] New company created, sending welcome message`)
     const {
       team: { id: team_id },
       incoming_webhook: { channel_id },
@@ -169,13 +175,15 @@ const oauth = async (req, res) => {
     // Auth user
     const authedUser = await createToken(newUser)
 
+    console.log(`[OAuth] Success! Returning token`)
     return res.status('200').send({
       message: 'existing user',
       token: authedUser,
     })
   } catch (err) {
+    console.error('[OAuth] Error:', err)
     return res.status('400').send({
-      message: err,
+      message: err.message || err,
     })
   }
 }
