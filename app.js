@@ -39,12 +39,7 @@ app.use(favicon(__dirname + '/build/favicon.ico'))
 app.use(express.static(__dirname))
 app.use(express.static(path.join(__dirname, 'build')))
 
-// Production
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'))
-})
-
-/* ROUTES */
+/* API ROUTES - These must come BEFORE the catch-all route */
 
 /* HANDLE SLASH COMMANDS */
 app.post('/lunch', slackLunchCommand)
@@ -115,6 +110,11 @@ app.post('/clear/user', async (req, res) => {
     })
     res.status('200').send({ user })
   }
+})
+
+/* CATCH-ALL ROUTE FOR REACT APP - Must be LAST after all API routes */
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
 app.listen(PORT, () => {

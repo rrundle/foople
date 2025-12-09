@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
+import { baseUri } from '../config'
 
 const initializeAuth = (history, location) => async (dispatch, getState) => {
   const state = getState()
@@ -24,7 +25,7 @@ const initializeAuth = (history, location) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(`/check-auth`, options)
+    const response = await fetch(`${baseUri}/check-auth`, options)
     if (!response.ok) {
       Cookies.remove('lunch-session')
       dispatch({ type: SET_AUTH, value: false })

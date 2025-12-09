@@ -2,16 +2,43 @@ const fetch = require('node-fetch')
 const FormData = require('form-data')
 const { mongoClient } = require('../database')
 
+// In-memory cache for tokens to avoid slow MongoDB queries on critical paths
+// Cache structure: { teamId: { token: string, expiresAt: Date, cachedAt: Date } }
+const tokenCache = new Map()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
 /**
  * Gets a fresh Slack access token for a workspace
  * Checks if token is expired or expiring soon, refreshes if needed
  * @param {string} teamId - Slack team/workspace ID
+ * @param {boolean} skipCache - Skip in-memory cache (for critical timing paths)
  * @returns {Promise<string|null>} Fresh access token or null if refresh fails
  */
-const getFreshAccessToken = async (teamId) => {
+const getFreshAccessToken = async (teamId, skipCache = false) => {
+  const startTime = Date.now()
   if (!teamId) {
     console.error('getFreshAccessToken: teamId is required')
     return null
+  }
+
+  // Check in-memory cache first (for fast path - avoiding slow MongoDB queries)
+  if (!skipCache && tokenCache.has(teamId)) {
+    const cached = tokenCache.get(teamId)
+    const cacheAge = Date.now() - cached.cachedAt.getTime()
+
+    // Use cache if less than 5 minutes old and token not expiring soon
+    if (
+      cacheAge < CACHE_TTL &&
+      cached.expiresAt &&
+      cached.expiresAt > new Date(Date.now() + 60 * 60 * 1000)
+    ) {
+      console.log(
+        `[${teamId}] Using in-memory cache (age: ${Math.round(
+          cacheAge / 1000,
+        )}s, took ${Date.now() - startTime}ms)`,
+      )
+      return cached.token
+    }
   }
 
   try {
@@ -44,14 +71,31 @@ const getFreshAccessToken = async (teamId) => {
 
     // If token is still valid for more than 1 hour, return it
     if (expiryDate && expiryDate > oneHourFromNow) {
+      console.log(
+        `[${teamId}] Token is fresh, returning from DB (took ${
+          Date.now() - startTime
+        }ms)`,
+      )
+
+      // Update in-memory cache for next time
+      tokenCache.set(teamId, {
+        token: accessToken,
+        expiresAt: expiryDate,
+        cachedAt: new Date(),
+      })
+
       return accessToken
     }
 
     // Token is expired or expiring soon, refresh it
     console.log(
-      `Refreshing Slack token for team ${teamId} (expires: ${expiryDate})`,
+      `[${teamId}] Refreshing Slack token (expires: ${expiryDate}) - THIS WILL TAKE ~500ms`,
     )
+    const refreshStartTime = Date.now()
     const newTokenData = await refreshSlackToken(refreshToken, teamId)
+    console.log(
+      `[${teamId}] Token refresh took ${Date.now() - refreshStartTime}ms`,
+    )
 
     if (!newTokenData) {
       console.error(
@@ -79,6 +123,19 @@ const getFreshAccessToken = async (teamId) => {
         `getFreshAccessToken: Token refresh succeeded but database update failed for team ${teamId}`,
       )
     }
+
+    console.log(
+      `[${teamId}] getFreshAccessToken completed in ${
+        Date.now() - startTime
+      }ms`,
+    )
+
+    // Update in-memory cache
+    tokenCache.set(teamId, {
+      token: newTokenData.access_token,
+      expiresAt: newTokenData.token_expires_at,
+      cachedAt: new Date(),
+    })
 
     return newTokenData.access_token
   } catch (error) {

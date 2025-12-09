@@ -6,7 +6,7 @@ import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { toast } from 'react-toastify'
 
-import { cookieExpiration } from '../config'
+import { baseUri, cookieExpiration } from '../config'
 import SvgSpinner from '../components/svg-spinner'
 import { ADD_USER, SET_AUTH } from '../constants/actionTypes'
 
@@ -43,7 +43,7 @@ const SlackAuth = ({ addUser, setAuth }) => {
       }
 
       try {
-        const response = await fetch(`/oauth`, options)
+        const response = await fetch(`${baseUri}/oauth`, options)
         if (!response.ok) throw new Error('No slack Auth')
         const body = await response.json()
 

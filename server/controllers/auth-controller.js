@@ -2,7 +2,6 @@ const qs = require('qs')
 const fetch = require('node-fetch')
 const schedule = require('node-schedule')
 const moment = require('moment')
-const stripe = require('stripe')(process.env.REACT_APP_STRIPE_API_KEY)
 const { AccountStatus } = require('../constants')
 const { generateJWT } = require('../jwt')
 const { mongoClient } = require('../database')
@@ -38,8 +37,13 @@ const checkAuth = async (req, res) => {
 
 const oauth = async (req, res) => {
   const { code, state } = req.body
-  // Always use v2 for token rotation support - this provides refresh tokens
-  const uri = 'https://slack.com/api/oauth.v2.access'
+
+  // Use OAuth v2 for workspace installation (bot tokens with refresh tokens)
+  // Use OAuth v1 for user login (identity scopes - doesn't support v2)
+  const useV2 = state === 'signup'
+  const uri = useV2
+    ? 'https://slack.com/api/oauth.v2.access'
+    : 'https://slack.com/api/oauth.access'
 
   const body = qs.stringify({
     client_id: process.env.CLIENT_ID,
@@ -60,9 +64,13 @@ const oauth = async (req, res) => {
     const response = await request.json()
     if (!response.ok) throw new Error(response.error)
 
-    // Calculate token expiry time (Slack typically provides 12 hours = 43200 seconds)
-    const expiresIn = response.expires_in || 43200
-    const tokenExpiresAt = new Date(Date.now() + expiresIn * 1000)
+    // Calculate token expiry time (only for v2 responses)
+    // v1 responses don't have expires_in or refresh tokens
+    let tokenExpiresAt = null
+    if (useV2 && response.expires_in) {
+      const expiresIn = response.expires_in || 43200
+      tokenExpiresAt = new Date(Date.now() + expiresIn * 1000)
+    }
     // insert the new client into the database
     const {
       team: { id: teamId } = {},

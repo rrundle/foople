@@ -21,6 +21,7 @@ const getCompany = async (req, res) => {
 
 const getUserSpots = async (req, res) => {
   const { userData: { teamId = '' } = {} } = req.body
+  console.log('🚀 ~ teamId:', teamId)
   if (!teamId) {
     res.status(400).send({
       message: 'no auth to get spots',
