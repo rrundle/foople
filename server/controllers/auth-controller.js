@@ -36,7 +36,8 @@ const checkAuth = async (req, res) => {
 }
 
 const oauth = async (req, res) => {
-  const { code, state } = req.body
+  // Support both GET (Slack redirect) and POST (frontend)
+  const { code, state } = req.method === 'GET' ? req.query : req.body
 
   // Use OAuth v2 for workspace installation (bot tokens with refresh tokens)
   // Use OAuth v1 for user login (identity scopes - doesn't support v2)

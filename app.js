@@ -47,7 +47,8 @@ app.post('/lunch', slackLunchCommand)
 /* HANDLE THE INTERACTIVE COMPONENTS */
 app.post('/lunch/interactive', slackInteractiveCommand)
 
-/* Oauth endpoint for new users */
+/* Oauth endpoint for new users - supports both GET (Slack redirect) and POST (frontend) */
+app.get('/oauth', oauth)
 app.post('/oauth', oauth)
 
 /* Check user's auth status and refresh if valid jwt */
