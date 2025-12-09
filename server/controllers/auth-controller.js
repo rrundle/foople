@@ -39,6 +39,8 @@ const oauth = async (req, res) => {
   // Support both GET (Slack redirect) and POST (frontend)
   const { code, state } = req.method === 'GET' ? req.query : req.body
 
+  console.log(`[OAuth] Method: ${req.method}, code: ${code ? 'present' : 'missing'}, state: ${state}`)
+
   // Use OAuth v2 for workspace installation (bot tokens with refresh tokens)
   // Use OAuth v1 for user login (identity scopes - doesn't support v2)
   const useV2 = state === 'signup'
@@ -61,8 +63,10 @@ const oauth = async (req, res) => {
   }
 
   try {
+    console.log(`[OAuth] Calling Slack API: ${uri}`)
     const request = await fetch(uri, options)
     const response = await request.json()
+    console.log(`[OAuth] Slack response:`, { ok: response.ok, error: response.error })
     if (!response.ok) throw new Error(response.error)
 
     // Calculate token expiry time (only for v2 responses)
